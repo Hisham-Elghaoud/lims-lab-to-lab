@@ -17,7 +17,7 @@ export class ApiService {
   printZebraURL='http://127.0.0.1:3000'
   urls = [
     "http://127.0.0.1:4001/",
-    "http://165.22.27.138/lims/v1/reception/"
+    "http://165.22.27.138/ltl/"
   ]
 
  base = environment.baseURL + '/';
