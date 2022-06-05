@@ -35,13 +35,6 @@ export class ApiService {
     return new HttpHeaders().set('Authorization',  sessionStorage.getItem('UserToken'));
   }
 
-  settings = {
-
-    checkTax: ()=> this.http.get(this.base + 'check-tax', {
-      headers: this.getTokenHeader(),
-    }),
-  }
-
   common = {
 
     get_me: ()=>{
