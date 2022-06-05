@@ -1,0 +1,132 @@
+<ng-container *ngIf="this.router.url === '/correspondents'">
+  <div class="row">
+    <div class="col">
+      <h2 class="roboto-300 start">{{'Correspondents List' | locale}}</h2>
+    </div>
+  </div>
+
+  <div class="card mb-5 mt-5">
+    <div class="container-fluid py-3 px-4">
+      <!--
+      <div class="row mt-2">
+
+        <div class="col-12 col-lg-2 mt-3 mt-lg-0">
+          <div class="d-flex w-100 justify-content-end ">
+            <button  data-toggle="modal" data-target="#cor-modal"
+             type="button" id="add-button" class="btn btn-outline-primary w-100 roboto-400" (click)="action = {'type' : 'New'}">Add +</button>
+          </div>
+        </div>
+
+      </div> -->
+
+      <div class="row">
+        <div class="col-12">
+          <div class="table-responsive">
+            <table class="table mt-3">
+              <thead>
+                <tr class="neue-light roboto-400">
+                  <!-- <th  scope="col" > الرقم التسلسلي</th> -->
+                  <th style="min-width: 50px" min-width="15%" scope="col">{{'code' | locale}}</th>
+                  <th style="min-width: 150px" scope="col">{{'Name' | locale}}</th>
+                  <th style="min-width: 150px" scope="col">{{'Phone' | locale}}</th>
+                  <th style="min-width: 150px" scope="col">{{'Default Pricing' | locale}}</th>
+                  <!-- <th style="min-width:  50px;" scope="col"> Edit</th> -->
+                  <!-- <th style="min-width: 150px" scope="col">Standard Price</th>
+                  <th style="min-width: 150px" scope="col">Charged Price</th>
+                  <th style="min-width: 150px" scope="col">Paid</th> -->
+                  <th style="min-width: 150px" scope="col">{{'Balance' | locale}}</th>
+                  <!-- <th scope="col">خيارات</th> -->
+                  <!-- <th scope="col"></th> -->
+                </tr>
+              </thead>
+              <br />
+
+              <tbody class="neue-light mt-2">
+                <ng-container
+                  *ngFor="let correspondent of correspondents | async"
+                >
+                  <!-- (click)="openModal({'type' : 'Edit' , 'id' : correspondent.id})" -->
+                  <!-- [routerLink]="correspondent.id" -->
+                  <tr valign="middle" class="clickable_row roboto-400">
+                    <!-- <td scope="row">{{voucher.serial_number}}</td> -->
+                    <td style="min-width: 50px">{{ correspondent.code }}</td>
+                    <td style="min-width: 150px">{{ correspondent.name }}</td>
+                    <td style="min-width: 150px">
+                      {{ correspondent.phone_number || '❌'}}
+                    </td>
+                    <td style="min-width: 150px">{{ correspondent.pricing }}</td>
+                    <!-- <td style="min-width: 50px">
+                      <button
+                        (click)="
+                          openModal({ type: 'Edit', id: correspondent.id });
+                          $event.stopPropagation()
+                        "
+                        type="button"
+                        class="btn btn-outline-info p-0 px-3"
+                      >
+                        <i class="fas fa-edit"></i>
+                      </button>
+                    </td> -->
+                    <!-- <td style="min-width: 150px">
+                      {{ correspondent.payment.total }}
+                    </td>
+                    <td style="min-width: 150px">
+                      {{ correspondent.payment.total_summery || 0 }}
+                    </td>
+                    <td style="min-width: 150px">
+                      {{ correspondent.payment.paid + data.info['currency']}}
+                    </td> -->
+                    <td style="min-width: 150px">
+                      {{ (correspondent.payment.remaining || 0) + data.info['currency'] }}
+                    </td>
+                    <!-- <td class="flex-column "  ><a class="py-0" ><h5 class="neue-reg text-right">
+                    <i (click)="pay(order.id)" *ngIf="order.status == 'بانتظار الدفع'" class="fas fa-dollar-sign item"></i>
+                  </h5></a>
+                  </td> -->
+                    <!-- <td width="15%"><button [disabled]="!(order.order_state_id == 1 || order.order_state_id == 2) " (click)="cancelOrder(order.id)" class=" btn btn-outline-secondary " > الغاء الطلب</button></td> -->
+                  </tr>
+                </ng-container>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>
+
+<!-- <router-outlet></router-outlet> -->
+
+<!-- Modal -->
+<div
+  class="modal fade"
+  id="cor-modal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="exampleModalCenterTitle"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="container-fluid px-4 mt-3">
+          <div class="row">
+            <div class="col-12">
+              <h5 class="roboto-500">
+                {{
+                  this.action?.type == "Edit" ? "Edit" : "Create"
+                }}
+                Correspondent
+              </h5>
+            </div>
+          </div>
+        </div>
+
+        <app-new-correspondent
+          [action]="action"
+          (setCreated)="correspondentCreated()"
+        ></app-new-correspondent>
+      </div>
+    </div>
+  </div>
+</div>

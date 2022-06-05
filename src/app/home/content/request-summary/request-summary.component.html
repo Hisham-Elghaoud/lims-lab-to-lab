@@ -1,0 +1,247 @@
+
+<div class="row">
+  <div class="col">
+    <h4 class="roboto-300 m-0 mt-1 start">{{'Request Summary' | locale}} #{{request.reception_number}}</h4>
+  </div>
+  <div >
+
+    <div class="d-flex align-items-center w-100 justify-content-end">
+      <div class="px-1">
+        <button (click)="detailedInvoice()" type="button" class="btn btn-outline-primary ">{{'Detailed invoice' | locale}}</button>
+        <div style="opacity: 0;" class="custom-control custom-checkbox py-2">
+
+          <label class="custom-control-label"
+            >
+            &nbsp;
+            </label
+          >
+        </div>
+
+
+      </div>
+      <div class="px-1">
+        <button (click)="print()" type="button" class="btn btn-outline-primary">{{'Print Receipt' | locale}}</button>
+
+        <div style="opacity: 0;" class="custom-control custom-checkbox py-2">
+
+          <label class="custom-control-label"
+            >&nbsp;</label
+          >
+        </div>
+
+
+      </div>
+
+
+
+      <div class="px-1">
+        <button data-target="#categories_modal" data-toggle="modal" type="button" class="btn btn-outline-primary">{{'Print Barcodes' | locale}}</button>
+
+        <div class="d-flex h-100 align-items-center start">
+
+          <div class="form-group form-check">
+            <input
+            name="withDevices"
+              type="checkbox"
+              [(ngModel)]="single_sticker"
+              class="form-check-input"
+              id="single_sticker"
+            />
+            <label class="form-check-label" [ngClass]="{'mr-4' : data.isRTL}" for="single_sticker">{{'Single sticker' | locale}}</label>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<div *ngIf="request" class="">
+
+
+  <div class="container-fluid">
+
+     <hr>
+
+    <div class="row">
+      <div class="col-12">
+        <div class="table-responsive  ">
+          <table class="table  blueTable">
+          <thead>
+
+
+
+          </thead>
+          <br>
+
+          <tbody class="neue-light ">
+
+              <tr>
+                <td class="head roboto-700 pb-4 pt-4">{{'Patient Info' | locale}}</td>
+              </tr>
+
+              <tr valign="middle"  class="clickable_row roboto-400">
+                <td width="25%"><b>{{'Patient id' | locale}}</b> </td>
+                <td>{{request['patient_id']}}</td>
+              </tr>
+
+              <tr valign="middle"  class="clickable_row roboto-400">
+                <td width="25%"><b>{{'Patient Name' | locale}}</b> </td>
+                <td>{{request['patient']}}</td>
+              </tr>
+
+              <tr >
+                <td class="head roboto-700 pb-4 pt-4">{{'Request Info' | locale}}</td>
+              </tr>
+
+              <tr valign="middle"  class="clickable_row roboto-400">
+                <td width="25%"><b>{{'Clinical Information' | locale}}</b> </td>
+                <td>{{request['clinical_information']}}</td>
+              </tr>
+
+              <tr valign="middle"  class="clickable_row roboto-400">
+                <td width="25%"><b>{{'Laboratory Information' | locale}}</b> </td>
+                <td>{{request['laboratory_information']}}</td>
+              </tr>
+
+              <tr valign="middle"  class="clickable_row roboto-400">
+                <td width="25%"><b>{{'Hospitalization Date' | locale}}</b> </td>
+                <td>{{request['hospitalization_date']? (request['hospitalization_date']  | date) : ""}}</td>
+              </tr>
+
+              <tr valign="middle"  class="clickable_row roboto-400">
+                <td width="25%"><b>{{'Urgency' | locale}}</b> </td>
+                <td>{{request['urgent_flag'] | urgent}}</td>
+              </tr>
+
+              <tr >
+                <td class="head roboto-700 pb-4 pt-4">{{'Payment Information' | locale}}</td>
+              </tr>
+              <ng-container *ngIf="request.pricing">
+                <tr valign="middle" class="clickable_row roboto-400">
+                  <td width="25%"><b>{{'Pricing' | locale}}</b> </td>
+                  <td>{{request.pricing.name }} </td>
+                </tr>
+              </ng-container>
+
+              <tr valign="middle" class="clickable_row roboto-400">
+                <td width="25%"><b>{{'Total' | locale}}</b> </td>
+                <td>{{ total + data.info['currency']}}</td>
+              </tr>
+
+              <tr valign="middle" class="clickable_row roboto-400">
+                <td width="25%"><b>{{'Remaining' | locale}}</b> </td>
+                <td>{{remaining + data.info['currency']}}</td>
+              </tr>
+
+
+              <!-- <tr >
+                <td class="head roboto-700 pb-4 pt-4">Profiles </td>
+              </tr>
+              <ng-container *ngIf="request.profiles">
+                <tr *ngFor="let profile of request['profiles']['data']" valign="middle" class="clickable_row roboto-400">
+                  <td width="25%"><b>Profile</b> </td>
+                  <td>{{profile['code'] + "  |  " +  profile['name'] + "  |  " + profile['amount'] + "LYD" }} </td>
+                </tr>
+              </ng-container> -->
+
+              <tr >
+                <td class="head roboto-700 pb-4 pt-4">{{'Tests' | locale}} </td>
+              </tr>
+              <ng-container *ngIf="request.tests">
+                <tr *ngFor="let test of request['tests']['data']" valign="middle" class="clickable_row roboto-400">
+                  <td width="25%"><b>{{'Test' | locale}}</b> </td>
+                  <td>{{test['code'] + "  |  " +  test['name'] + "  |  " + test['amount'] }}{{data.info['currency']}} </td>
+                </tr>
+              </ng-container>
+
+
+
+
+
+
+          </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+
+
+
+  </div>
+
+
+
+</div>
+
+
+
+
+<div
+  class="modal fade"
+  id="categories_modal" data-toggle="modal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="exampleModalCenterTitle"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5>Select Categories</h5>
+      </div>
+
+      <div class="modal-body">
+        <div class="container-fluid px-4 mt-3">
+          <div>
+            <form
+              id="categories_form"
+              #categories_form="ngForm"
+              (ngSubmit)="printBarcode(categories_form)"
+            >
+
+            <div class="container-fluid">
+              <div class="row justify-content-around">
+                <button (click)="categories_select_all(false)" type="button" class="col-5 form-control">Select All</button>
+                <button (click)="categories_select_all(true)" type="button" class="col-5 form-control">Unselect All</button>
+              </div>
+            </div>
+
+              <div *ngFor="let category of categories" class="col-12 p-4">
+                <div class="d-flex h-100 align-items-center">
+                  <div class="">
+                    <div class="custom-control custom-checkbox">
+                      <!-- [(ngModel)]="request.urgent_flag" -->
+                      <input
+                        [name]="category.id"
+                        [ngModel]="true"
+                        type="checkbox"
+                        class="custom-control-input"
+                        [id]="'categories|' + category.id"
+                      />
+                      <label class="custom-control-label" [for]="'categories|' + category.id">{{
+                        category.name
+                      }}</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+
+        <button form="categories_form" type="submit" class="btn btn-primary">
+          Done
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+

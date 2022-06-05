@@ -1,0 +1,57 @@
+
+        <div class="form-group">
+          <label *ngIf="!no_label" >{{label}}</label>
+          <input (focus)="change({value:''})" (input)="change($event.target)" autocomplete="off" type="text" (blur)="hide()"  class="form-control" [id]="'item_autocomplete-' + route + unique"
+          [placeholder]="('Search by ' + (label? (label | lowercase) + ' ': '') + 'code') | locale"
+          (keyup.arrowdown)="shiftFocusDown()"
+          (keyup.arrowup)="shiftFocusUp()"
+          (keyup.enter)="enter()"
+
+          >
+
+          <!-- [ngStyle]="{'top': top}" -->
+          <div
+          [ngStyle]="top? {top:top} : null"
+          style="width: 94%!important;left: 3%;right: 3%;max-height: 300px; top: 110px; overflow-y: scroll;"  [class]="'dropdown-menu item-dropdown-menu-' + route + unique">
+
+            <div style="width: 100%!important;" class="table-responsive">
+              <table style="width: 100%!important;" class="table ">
+              <thead>
+                <tr class="neue-light ">
+                  <th *ngFor="let header of headers"  scope="col">{{header | locale}}</th>
+                  <!-- <th scope="col"></th> -->
+                </tr>
+
+
+
+              </thead>
+              <br>
+
+              <tbody class="neue-light">
+
+                <ng-container *ngFor="let datum of is_paginated? (items | async) : (filtered_items | async)">
+
+                    <tr valign="middle" (mousedown)="$event.preventDefault()" (click)="setItem(datum)"  class="clickable_row ">
+                        <!-- <td scope="row">{{voucher.serial_number}}</td> -->
+                        <td class="allRow" *ngFor="let value of values">{{ arr.isArray(value)? datum[value[0]][value[1]]:datum[value]}}</td>
+                        <!-- <td class="flex-column "  ><a class="py-0" ><h5 class="neue-reg text-right">
+                          <i (click)="pay(order.id)" *ngIf="order.status == 'بانتظار الدفع'" class="fas fa-dollar-sign item"></i>
+                        </h5></a>
+                        </td> -->
+                        <!-- <td width="15%"><button [disabled]="!(order.order_state_id == 1 || order.order_state_id == 2) " (click)="cancelOrder(order.id)" class=" btn btn-outline-secondary " > الغاء الطلب</button></td> -->
+                      </tr>
+                    </ng-container>
+
+
+
+              </tbody>
+              </table>
+            </div>
+            <!-- <a *ngFor="let item of items" class="dropdown-item" href="#">{{item.name}}</a>
+            <a *ngFor="let item of items" class="dropdown-item" href="#">{{item.name}}</a> -->
+          </div>
+
+        </div>
+
+
+

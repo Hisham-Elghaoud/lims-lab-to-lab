@@ -1,0 +1,158 @@
+
+
+<ng-container *ngIf="this.router.url === '/profiles'">
+
+  <div class="row">
+    <div class="col">
+      <h2 class="roboto-300">Profiles List</h2>
+    </div>
+  </div>
+
+  <div class="card mt-5 mb-5">
+    <div class="container-fluid py-3 px-4">
+
+
+
+      <div class="row mt-2">
+
+
+        <div class="col-12 ">
+          <form #form="ngForm"  (ngSubmit)="search()">
+
+            <div class="form-group m-0 roboto-400"><input type="text"
+              name="key" [(ngModel)]="key" class="form-control px-5" id="exampleFormControlInput1"
+              placeholder="Search by profile code">
+
+              <i class="fas search-icon fa-search"></i>
+
+            </div>
+
+          </form>
+        </div>
+
+
+
+
+      </div>
+
+      <div class="row">
+
+        <div class="col-12">
+          <div class="table-responsive  ">
+            <table class="table mt-3">
+            <thead>
+              <tr class="neue-light roboto-400">
+                <!-- <th  scope="col" > الرقم التسلسلي</th> -->
+                <th width="15%" scope="col"> Code</th>
+                <th scope="col"> Name</th>
+                <th scope="col"> Amount</th>
+                <!-- <th scope="col">خيارات</th> -->
+                <!-- <th scope="col"></th> -->
+              </tr>
+
+
+
+            </thead>
+            <br>
+
+            <tbody class="neue-light mt-2">
+              <ng-container *ngFor="let profile of profiles | async ">
+
+                 <tr valign="middle"  data-toggle="modal" data-target="#tests-modal" (click)="setProfile(profile)" class="clickable_row roboto-400">
+                  <!-- <td scope="row">{{voucher.serial_number}}</td> -->
+                  <td>{{profile.code}}</td>
+                  <td>{{profile.name }}</td>
+                  <td>{{profile.amount+ data.info['currency']}} </td>
+                  <!-- <td class="flex-column "  ><a class="py-0" ><h5 class="neue-reg text-right">
+                    <i (click)="pay(order.id)" *ngIf="order.status == 'بانتظار الدفع'" class="fas fa-dollar-sign item"></i>
+                  </h5></a>
+                  </td> -->
+                  <!-- <td width="15%"><button [disabled]="!(order.order_state_id == 1 || order.order_state_id == 2) " (click)="cancelOrder(order.id)" class=" btn btn-outline-secondary " > الغاء الطلب</button></td> -->
+                </tr>
+              </ng-container>
+
+
+
+            </tbody>
+            </table>
+          </div>
+        </div>
+<!--
+        <div class="col-12 mt-3">
+          <div class="w-100 d-flex justify-content-center neue-med p-0">
+              <pagination-controls
+              responsive="true"
+              previousLabel="Previous"
+              nextLabel="Next"
+               (pageChange)="getProfiles('',$event)"
+               id="pagination"></pagination-controls>
+          </div>
+       </div> -->
+
+      </div>
+
+
+    </div>
+  </div>
+
+</ng-container>
+
+<!-- <router-outlet></router-outlet> -->
+
+
+
+<div class="modal fade" id="tests-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+    <div class="modal-content">
+
+      <div class="modal-body">
+
+
+        <h4>{{selectedProfile.name}} Tests</h4>
+
+        <div class="container-fluid">
+
+          <div class="row">
+            <div class="table-responsive ">
+              <table class="table ">
+              <thead>
+                <tr class="neue-light ">
+                  <th width="15%" scope="col"> Code</th>
+                  <th scope="col"> Name</th>
+                  <th scope="col"> Amount</th>
+                  <!-- <th scope="col"></th> -->
+                </tr>
+
+
+
+              </thead>
+              <br>
+
+              <tbody class="neue-light">
+                <ng-container *ngFor="let test of selectedProfile['test']['data'] ">
+
+                   <tr valign="middle" (mousedown)="$event.preventDefault()"  class="clickable_row ">
+                    <td>{{test.code}}</td>
+                    <td>{{test.name }}</td>
+                    <td>{{test.amount + data.info['currency']}} </td>
+
+                  </tr>
+                </ng-container>
+
+              </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+

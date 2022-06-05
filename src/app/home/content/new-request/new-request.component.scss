@@ -1,0 +1,37 @@
+td button {
+  line-height: 0;
+}
+
+.disabledbutton {
+  pointer-events: none;
+  opacity: 0.8;
+  cursor: not-allowed;
+}
+
+
+.dropdown-toggle.rtl::after {
+  left: 20px!important;
+  right: unset!important;
+}
+
+
+.save-btn{
+
+  position: absolute;
+  bottom: 25px;
+  right: 25px;
+  z-index: 200;
+  font-size: 12px;
+
+}
+
+.save-btn-rtl{
+
+  position: absolute;
+  bottom: 25px;
+  left: 25px;
+  z-index: 200;
+  font-size: 12px;
+
+}
+

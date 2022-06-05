@@ -1,0 +1,90 @@
+<div class="container-fluid vh-100">
+  <div class="row justify-content-center align-items-center h-100">
+    <div class="col-10 col-md-6  col-xl-5">
+      <div class="card w-100 p-5 ">
+
+        <form #loginForm="ngForm" (ngSubmit)="onSubmit(loginForm)">
+          <div class="container-fluid">
+
+              <div class="row justify-content-center">
+                <div class="col-12">
+                  <div class="d-flex justify-content-center">
+                      <!-- <img src="assets/logo.svg" width="60px" alt=""> -->
+                      <img src="assets/logo.svg" class="h-100" width="60px" alt="">
+
+
+                  </div>
+                </div>
+
+                <div class="col-12 my-5">
+                  <div class="d-flex w-100 justify-content-center">
+                    <h5>Receptionist Panel</h5>
+                  </div>
+                </div>
+
+              </div>
+
+
+              <div class="row neue-reg">
+
+                  <div class="col-lg-12">
+
+                      <div class="form-group">
+
+                          <label for="exampleInputEmail1">{{'Username' | locale}}</label>
+                          <input  name="username" [(ngModel)]="email" #username_input="ngModel"
+                           required
+                           id="username" type="text" class="form-control"  [placeholder]="'username' | locale">
+
+                          <!-- <small *ngIf="
+                          (email_input.errors?email_input.errors['email']:false)
+                          && email_input.touched">
+                          </small> -->
+
+                          <small *ngIf="
+                          (username_input.errors?username_input.errors['required']:false)
+                          && username_input.touched">
+                            The username is required
+                          </small>
+
+
+                      </div>
+
+                  </div>
+
+                  <div class="col-lg-12">
+
+                      <div class="form-group">
+                        <label for="exampleInputEmail1">{{'Password' | locale}}</label>
+                        <input required [(ngModel)]="password" #pass_input="ngModel" name="password" type="password" class="form-control"  [placeholder]="'password' | locale">
+
+                        <small *ngIf="
+                        (pass_input.errors?pass_input.errors['required']:false)
+                        && pass_input.touched">
+                        The password is required
+                        </small>
+
+                      </div>
+
+                  </div>
+
+              </div>
+
+              <hr>
+
+              <div class="row neue-reg my-4">
+                  <div class="col-12">
+                      <div class="d-flex justify-content-center">
+                          <button type="submit" class="btn btn-outline-primary  ">{{'Login' | locale}}</button>
+                      </div>
+                  </div>
+              </div>
+
+
+
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

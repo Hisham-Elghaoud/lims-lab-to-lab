@@ -1,0 +1,865 @@
+<div class="row">
+    <div class="col">
+        <h2 class="start roboto-300">
+            {{ (action + ' Request') | locale}} {{ requestNum ? "#" + requestNum : "" }}
+        </h2>
+        <h5 class="text-muted start" *ngIf="request?.created_at">
+            {{ request.created_at | date: "full" }}
+        </h5>
+    </div>
+
+    <div *ngIf="requestNum">
+        <div>
+            <button data-toggle="modal" data-target="#param-modal" type="button" id="add-button" class="btn btn-primary mx-2 roboto-400" (click)="
+          data.activity_log_request_id_stored = requestNum;
+          data.navigate_to('activity', { abs: true })
+        ">
+        {{'Activity log' | locale}}
+      </button>
+        </div>
+    </div>
+    <div *ngIf="patient.hospital_id != null">
+        <div>
+            <button type="button" id="add-button" class="btn btn-primary mx-2 roboto-400" (click)="history()"> {{'history' | locale}} </button>
+        </div>
+    </div>
+
+</div>
+
+<div class="card w-100 p-4 p-xl-5 my-5">
+    <div class="container-fluid py-2">
+        <div *ngIf="action == 'New'" class="row justify-content-end">
+            <div *ngFor="let button of buttons" style="text-align: end" class="col px-2">
+                <button (click)="download_upload_modal_data = button.data" data-target="#download_upload_modal" data-toggle="modal" class="btn btn-outline-primary">
+          {{ button.label | locale }}
+        </button>
+            </div>
+        </div>
+
+        <div class="col">
+            <h4 class="roboto-500 start">{{'Patient Info' | locale}}</h4>
+        </div>
+
+        <ng-container *ngIf="action == 'New'">
+            <div class="container-fluid px-4">
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <h5 class="roboto-500 start">{{'Select a patient' | locale}}</h5>
+                    </div>
+                </div>
+            </div>
+
+            <app-patient-select *ngIf="!patient.name" (setSelectedPatient)="setSelectedPatient($event)"></app-patient-select>
+            <div class="col-12 mt-3 form-group">
+                <ng-container *ngIf="patient.name">
+                    <div class="col-12 container-fluid">
+                        <div class="row">
+                            <div class="col">
+                                <button class="btn btn-light border col right-rad">
+                  {{ patient.name }}
+                </button>
+                            </div>
+                            <div>
+                                <button class="btn btn-danger form-control left-rad" style="width: fit-content" (click)="patient = { age_type: 'years' }">
+                  ✖
+                </button>
+                            </div>
+                        </div>
+                    </div>
+                </ng-container>
+            </div>
+        </ng-container>
+
+        <div [ngClass]="{ disabledbutton: patient.name && action == 'New' }">
+            <app-new-patient [patient]="patient" [isCreate]="false" [action]="{ type: 'New' }"></app-new-patient>
+        </div>
+    </div>
+
+    <form #form="ngForm">
+        <div class="container-fluid">
+            <div class="row mt-2 mb-4">
+                <div class="col-12">
+                    <h4 id="info_collapse" data-toggle="collapse" [attr.data-target]="action === 'New' ? null : '#info'" aria-expanded="false" aria-controls="info" class="roboto-500 py-2 start" [ngClass]="{
+              'dropdown-toggle p-3 btn-link clickable': action === 'Edit',
+              'rtl':data.isRTL
+            }">
+                        {{'Request Info' | locale}}
+                    </h4>
+                </div>
+            </div>
+            <div id="info" class="collapse" class="show">
+                <!-- <div id="info" class="collapse" [ngClass]="{'show': action === 'New'}"> -->
+                <div class="row neue-reg">
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                            <label for="civility">{{'Correspondent' | locale}}</label>
+                            <select *ngIf="correspondents | async as corres" [(ngModel)]="request.correspondent_id" name="correspondent_id" id="civility" class="custom-select" (change)="change_pricing($event.target.value, corres)">
+                <option [value]="'0'">{{'None' | locale}}</option>
+                <option
+                  *ngFor="let correspondent of corres"
+                  [value]="correspondent.id"
+                  [selected]="correspondent.is_default"
+                >
+                  {{ correspondent.name }}
+                </option>
+              </select>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                            <label for="picker">{{'Hospitalization Date' | locale}}</label>
+                            <input name="hospitalization_date" [(ngModel)]="request.hospitalization_date" id="picker" class="flatpickr flatpickr-input active form-control" type="text" [placeholder]="'Select a Date' | locale" />
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <label style="display: block;text-align: start;">{{'Doctor' | locale}}</label>
+
+                        <ng-container *ngIf="!doctor">
+                            <app-item-select [no_label]="true" top="67px" (setSelectedItem)="doctor = $event" title="doctors"></app-item-select>
+                        </ng-container>
+                        <ng-container *ngIf="doctor">
+                            <button (click)="doctor = null" class="btn btn-light border col-12">{{doctor.name}}</button>
+                        </ng-container>
+
+                        <!-- <div class="form-group">
+              <label for="civility">Doctor</label>
+              <select
+                [(ngModel)]="request.doctor"
+                name="doctor"
+                id="civility"
+                class="custom-select"
+              >
+                <option value="">None</option>
+                <option *ngFor="let doctor of doctors" [value]="doctor.id">
+                  {{ doctor.name }}
+                </option>
+              </select>
+            </div> -->
+                    </div>
+                </div>
+                <div class="row neue-reg">
+                    <div *ngIf="pricings" class="col-lg-4">
+                        <div class="form-group">
+                            <label for="pricing">{{'Pricing' | locale}}</label>
+                            <select (change)="changeTestsPricing()" [(ngModel)]="request.pricing_id" name="pricing_id" id="pricing" class="custom-select">
+                <option
+                  *ngFor="let pricing of pricings | async"
+                  [value]="pricing.id"
+                >
+                  {{ pricing.name }}
+                </option>
+              </select>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                            <label for="in_patient">{{'In | Out Patient' | locale}}</label>
+                            <select [ngModel]="request.in_patient ? 1 : 0" name="in_patient" id="in_patient" class="custom-select">
+                <option [value]="0">{{'Out Patient' | locale}}</option>
+                <option [value]="1">{{'In Patient' | locale}}</option>
+              </select>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4">
+                        <div class="form-group">
+                            <label for="chargeTo">{{'Charge to' | locale}}</label>
+                            <!--
+              PLZ DON'T DELETED AHMED PLZ
+              <select
+
+              [ngModel]="request.isClinic?1:0"
+              name="isClinic"
+              id="chargeTo"
+              class="custom-select"
+            >
+              <option
+                [value]="0"
+              >
+                Patient or/and Correspondent
+              </option>
+              <option
+                [value]="1"
+              >
+              Clinic
+            </option>
+            </select> -->
+                            <input class="form-control" name="isClinic" [value]="(clinic ? 'Clinic' : 'Patient or | and Correspondent') | locale" disabled />
+                        </div>
+                    </div>
+                    <!-- <div class="col-lg-3">
+            <div class="form-group">
+              <label for="exampleInputEmail1">Hospital ID </label>
+              <input type="button" value="search">
+              <button (click)="history()" [hidden]="request.hospital_id.length <= 3">     <i  class="fas  fa-search"></i> </button>
+
+              <input
+                maxlength="25"
+                placeholder="Enter Hospital id"
+                [(ngModel)]="request.hospital_id"
+                name="hospital_id"
+                type="text"
+                class="form-control"
+                #hospital_id_input="ngModel"
+              />
+            </div>
+          </div> -->
+                </div>
+                <div class="row neue-reg">
+                    <div class="col-lg-12">
+                        <div class="form-group">
+                            <label for="exampleInputEmail1">{{'Clinical Information' | locale}} </label>
+                            <input maxlength="500" name="clinical_information" [(ngModel)]="request.clinical_information" type="text" class="form-control" #clincal_information_input="ngModel" [placeholder]="'Clinical Information' | locale" />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row neue-reg">
+                    <div class="col-lg-12">
+                        <div class="form-group">
+                            <label for="exampleInputEmail1">{{'Laboratory Notes' | locale}}</label>
+                            <textarea (input)="showWSaveLabNotes()" name="laboratory_information" rows="4" cols="50" [(ngModel)]="request.laboratory_information" type="text" class="form-control" #lab_input="ngModel" [placeholder]="'Laboratory Notes' | locale"></textarea>
+                            <div class="">
+                                <button *ngIf="request?.status == 'technically validated'" (click)="saveLabNotes(lab_input)" [hidden]="isLabNotesSaveHidden" #save type="submit" class="btn btn-success py-0 roboto-400 btn-lab-notes" [ngClass]="{'save-btn' : !data.isRTL, 'save-btn-rtl': data.isRTL}">
+                  {{'Save' | locale}}
+                </button>
+                            </div>
+                        </div>
+
+
+
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-lg-3">
+
+                        <div class="d-flex h-100 align-items-center start">
+
+                            <div class="form-group form-check">
+                                <input name="urgent_flag" [(ngModel)]="request.urgent_flag" type="checkbox" class="form-check-input" id="customCheck1" />
+                                <label class="form-check-label" [ngClass]="{'mr-4' : data.isRTL}" for="customCheck1">{{'Urgent' | locale}}</label>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col-lg-3">
+                        <div class="d-flex h-100 align-items-center start">
+
+                            <div class="form-group form-check">
+                                <input name="is_repeat" [(ngModel)]="request.is_repeat" type="checkbox" class="form-check-input" id="customCheck2" />
+                                <label class="form-check-label" [ngClass]="{'mr-4' : data.isRTL}" for="customCheck2">{{'Repeat' | locale}}</label>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="mt-4" />
+
+                <div class="row mt-4 mb-4">
+                    <div class="col-12">
+                        <h4 class="roboto-500 start">{{'Add Tests | Profiles' | locale}}</h4>
+                    </div>
+                </div>
+
+                <!-- <div class="btn-group btn-group-toggle mb-2" data-toggle="buttons">
+        <label class="btn btn-outline-primary active">
+          <input
+            (click)="toggle('t')"
+            type="radio"
+            name="options"
+            [value]="'t'"
+            [(ngModel)]="searchType"
+            id="option1"
+          />
+          Tests
+        </label>
+        <label class="btn btn-outline-primary">
+          <input
+            (click)="toggle('p')"
+            type="radio"
+            name="options"
+            [value]="'p'"
+            [(ngModel)]="searchType"
+            id="option2"
+          />
+          Profiles
+        </label>
+      </div> -->
+
+                <app-test-select [requestId]="request_id" [selectedTests]="selectedTests" (setSelectedTest)="$event['isProfile']? open_profile_tests_modal($event) :changeTestsPricing($event)" unique="_selection" [hidden]="searchType == 'p' ? true : false"></app-test-select>
+                <!-- <app-profile-select
+        [requestId]="request_id"
+        (setSelectedProfile)="setSelectedProfile($event)"
+        [hidden]="searchType == 't' ? true : false"
+      ></app-profile-select> -->
+
+                <div [hidden]="searchType == 't' ? true : false" class="table-responsive mt-2">
+                    <table class="table">
+                        <thead>
+                            <tr class="neue-light">
+                                <!-- <th  scope="col" > الرقم التسلسلي</th> -->
+                                <th scope="col">Id</th>
+                                <th width="15%" scope="col">Code</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Original</th>
+                                <th scope="col">Original</th>
+                                <th scope="col">Charged</th>
+                                <th scope="col">Remove</th>
+
+                                <!-- <th scope="col"> Birthdate</th> -->
+                                <!-- <th scope="col">خيارات</th> -->
+                                <!-- <th scope="col"></th> -->
+                            </tr>
+                        </thead>
+
+                        <tbody class="neue-light">
+                            <ng-container *ngFor="let profile of selectedProfiles; index as i">
+                                <tr valign="middle" (mousedown)="$event.preventDefault()" class="clickable_row">
+                                    <!-- <td scope="row">{{voucher.serial_number}}</td> -->
+
+                                    <td>{{ i + 1 }}</td>
+                                    <td>{{ profile.code }}</td>
+                                    <td width="15%">{{ profile.name }}</td>
+                                    <td>{{ (profile.price.amount || 0) + data.info['currency'] }} </td>
+                                    <td>
+                                        {{ profile.price.lab_price || profile.price.amount + data.info['currency'] }}
+                                    </td>
+                                    <td>
+                                        <button (click)="removeProfile(profile)" type="button" class="btn btn-outline-danger">
+                      <i class="fas fa-times"></i>
+                    </button>
+                                    </td>
+
+                                    <!-- <td>{{patient.birthdate | date}}</td> -->
+                                    <!-- <td class="flex-column "  ><a class="py-0" ><h5 class="neue-reg text-right">
+                  <i (click)="pay(order.id)" *ngIf="order.status == 'بانتظار الدفع'" class="fas fa-dollar-sign item"></i>
+                </h5></a>
+                </td> -->
+                                    <!-- <td width="15%"><button [disabled]="!(order.order_state_id == 1 || order.order_state_id == 2) " (click)="cancelOrder(order.id)" class=" btn btn-outline-secondary " > الغاء الطلب</button></td> -->
+                                </tr>
+                            </ng-container>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div [hidden]="searchType == 'p' ? true : false" class="table-responsive mt-2">
+                    <table class="table">
+                        <thead>
+                            <tr class="neue-light">
+                                <!-- <th  scope="col" > الرقم التسلسلي</th> -->
+                                <th scope="col">{{'Id' | locale}}</th>
+                                <th style="min-width: 200px" scope="col">{{'Code' | locale}}</th>
+                                <th style="min-width: 200px" scope="col">{{'Name' | locale}}</th>
+                                <th style="min-width: 200px" scope="col">{{'Profile' | locale}}</th>
+                                <th scope="col">{{'Original' | locale}}</th>
+                                <th *ngIf="!clinic" scope="col">{{'Discount' | locale}}</th>
+                                <th *ngIf="clinic" scope="col">{{'Clinic' | locale}}</th>
+                                <th *ngIf="isTax" scope="col">{{'Tax' | locale}}</th>
+                                <th scope="col">{{'Charged' | locale}}</th>
+                                <th style="width: auto">{{'Remove' | locale}}</th>
+                                <!-- <th scope="col"> Birthdate</th> -->
+                                <!-- <th scope="col">خيارات</th> -->
+                                <!-- <th scope="col"></th> -->
+                            </tr>
+                        </thead>
+
+                        <tbody class="neue-light">
+                            <ng-container *ngFor="let test of selectedTests; index as i">
+                                <tr valign="middle" (mousedown)="$event.preventDefault()" class="clickable_row" [ngClass]="{'is_repeat':request.is_repeat && test.is_repeat}">
+                                    <!-- <td scope="row">{{voucher.serial_number}}</td> -->
+                                    <td>{{ i + 1 }}</td>
+                                    <td style="min-width: 200px">{{ test.code }}</td>
+                                    <td style="min-width: 200px">{{ test.name }}</td>
+                                    <td style="min-width: 200px">{{ test.profile?.name || '❌' }}</td>
+                                    <td>{{( test.price?.amount || test.amount || 0) + data.info['currency']}} </td>
+                                    <td *ngIf="!clinic">
+                                        {{ (test.price?.discount || test.discount || 0 )+ data.info['currency']}}
+                                    </td>
+                                    <td *ngIf="clinic">
+                                        {{ (test.price?.clinic_price || test.clinic_price || 0) + data.info['currency']}}
+                                    </td>
+                                    <td *ngIf="isTax">
+                                        {{ test.price?.tax || test.tax || 0}} %
+                                    </td>
+                                    <td>
+                                        {{ (test.price?.lab_price || test.lab_price || 0) + data.info['currency'] }}
+                                        <!-- || test.price?.amount || test.amount -->
+
+                                    </td>
+                                    <td style="width: auto" *ngIf="confirmDeleteTest == false || confirmDeleteTest == 'false'">
+                                        <button (click)="
+                        removeTest(
+                          test,
+                          test.price?.lab_price ||
+                            test.lab_price ||
+                            test.price?.amount || test.amount
+                        )
+                      " type="button" class="btn btn-outline-danger">
+                      <i class="fas fa-times"></i>
+                    </button>
+
+                                    </td>
+                                    <td style="width: auto" *ngIf="confirmDeleteTest == true || confirmDeleteTest == 'true'">
+                                        <button (click)="openReasonModal(
+                        test,
+                        test.price?.lab_price ||
+                          test.lab_price ||
+                          test.price?.amount || test.amount)" type="button" class="btn btn-outline-danger">
+                      <i class="fas fa-times"></i>
+                    </button>
+
+                                    </td>
+                                    <!-- <td>{{patient.birthdate | date}}</td> -->
+                                    <!-- <td class="flex-column "  ><a class="py-0" ><h5 class="neue-reg text-right">
+                  <i (click)="pay(order.id)" *ngIf="order.status == 'بانتظار الدفع'" class="fas fa-dollar-sign item"></i>
+                </h5></a>
+                </td> -->
+                                    <!-- <td width="15%"><button [disabled]="!(order.order_state_id == 1 || order.order_state_id == 2) " (click)="cancelOrder(order.id)" class=" btn btn-outline-secondary " > الغاء الطلب</button></td> -->
+                                </tr>
+                            </ng-container>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="row neue-reg my-4">
+                    <div class="col-6 start">
+                        <h4>
+                            {{'Total charged' | locale}}: <span class="roboto-700 start">{{ total + data.info['currency'] }}</span
+              ><span
+                *ngIf="!clinic"
+                (click)="onSubmit(form, { isDiscount: true })"
+                class="roboto-700 text-sm h6 clickable text-primary mx-3 start"
+                >{{'set discount' | locale}}</span
+              >
+            </h4>
+            <h4>
+              {{'Remaining' | locale}}: <span class="roboto-700 start">{{ remaining + data.info['currency'] }}</span
+              >
+            </h4>
+          </div>
+          <div class="col-6">
+            <div class="d-flex justify-content-end">
+              <!-- *ngSwitchCase="'Edit'" -->
+              <ng-container>
+                <div
+                *ngIf="action == 'New'"
+                placement="top"
+                  [ngbTooltip]="request?.isClinic? 'This request is charged to a clinic':null"
+
+                >
+                <button
+                  type="button"
+                  [disabled]="request_being_made || request?.isClinic"
+                  class="btn btn-outline-primary tajwal-regium px-5 mx-2"
+                  (click)="onSubmit(form, { isPay: true })"
+                >
+                  {{'Pay' | locale}}
+                </button>
+                </div>
+                <!-- (click)="goToHome= true; onSubmit(form)" -->
+                <div
+                placement="top"
+                  [ngbTooltip]="request?.status == 'technically validated'? ('Sorry you can\'t update validated request' | locale):null"
+
+                >
+                  <button
+                  type="button"
+                  id="onSubmitButton"
+                  [disabled]="request?.status =='technically validated' || request_being_made"
+
+                    class="btn btn-outline-primary tajwal-regium px-5"
+                    (click)="onSubmit(form, {})"
+                  >
+                    {{'Save' | locale}}
+                  </button>
+                </div>
+              </ng-container>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>
+
+<ng-container *ngIf="action == 'Edit'">
+  <ng-container *ngIf="!(request.status == 'active')">
+    <app-result [request]="request"></app-result>
+  </ng-container>
+</ng-container>
+
+<div
+  class="modal fade"
+  id="payment_modal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="exampleModalCenterTitle"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="container-fluid px-4">
+          <ng-container>
+            <app-payment
+              [patientId]="this.data.payment_patientId"
+              [request_id]="this.data.payment_request_id"
+            ></app-payment>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div
+  class="modal fade"
+  id="history"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="exampleModalCenterTitle"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="container-fluid px-4">
+          <ng-container>
+            <h1 class="start">{{'History' | locale}}</h1>
+            <div class="row">
+              <div class="col-12">
+                <div class="table-responsive">
+                  <table class="table mt-3" >
+                    <thead>
+                      <tr class="neue-light roboto-400">
+                        <!-- <th  scope="col" > الرقم التسلسلي</th> -->
+                        <th scope="col" width="15%">{{'Request' | locale}} #</th>
+                        <!-- <th scope="col"> Patient</th> -->
+                        <!-- <th scope="col"> Correspondent</th> -->
+                        <th scope="col" width="15%">{{'Date' | locale}}</th>
+                        <!-- <th scope="col"> Clinical Info</th> -->
+                        <!-- <th scope="col" width="15%">Category</th> -->
+                        <!-- <th scope="col"> Total</th> -->
+                        <th scope="col" width="10%">{{'Test' | locale}}</th>
+                        <th scope="col" width="15%">{{'Parameter' | locale}}</th>
+                        <th scope="col" width="5%">{{'Result' | locale}}</th>
+                        <th scope="col" width="25%" >{{'Notes' | locale}}</th>
+                        <!-- <th scope="col">خيارات</th> -->
+                        <!-- <th scope="col"></th> -->
+                      </tr>
+                    </thead>
+                    <tbody class="neue-light">
+                      <ng-container
+                        *ngFor="
+                          let request of historyData
+                            | paginate
+                              : {
+                                  id: 'pagination',
+                                  itemsPerPage: pagination.per_page,
+                                  currentPage: pagination.current_page,
+                                  totalItems: pagination.totalItems
+                                }
+                        "
+                      >
+                        <tr
+                          valign="middle"
+                          class="clickable_row roboto-400"
+                          [ngClass]="{ urgent: request.urgent_flag }"
+                        >
+                          <!-- <td scope="row">{{voucher.serial_number}}</td> -->
+                          <td width="15%">{{ request.reception_number }}</td>
+                          <!-- <td>{{request.patient_name }}</td> -->
+                          <!-- <td>{{request.correspondent_name }}</td> -->
+                          <td width="15%">{{ request.date }}</td>
+                          <!-- <td width="15%">{{ request.category_name }}</td> -->
+                          <td width="10%">{{ request.test_name }}</td>
+                          <td width="15%">{{ request.parameter }}</td>
+                          <td width="5%">{{ request.result }}</td>
+                          <td width="25%">{{ request.note }}</td>
+
+                          <!-- <td style="width: 70px;">{{request.total }} <span class="roboto-400 cur"> &nbsp; LYD</span></td> -->
+                            <!-- <td class="flex-column "  ><a class="py-0" ><h5 class="neue-reg text-right">
+                          <i (click)="pay(order.id)" *ngIf="order.status == 'بانتظار الدفع'" class="fas fa-dollar-sign item"></i>
+                        </h5></a>
+                        </td> -->
+                            <!-- <td width="15%"><button [disabled]="!(order.order_state_id == 1 || order.order_state_id == 2) " (click)="cancelOrder(order.id)" class=" btn btn-outline-secondary " > الغاء الطلب</button></td> -->
+                            </tr>
+                            </ng-container>
+                            </tbody>
+                            </table>
+                    </div>
+                </div>
+
+                <div class="col-12 mt-3">
+                    <div class="w-100 d-flex justify-content-center neue-med p-0">
+                        <pagination-controls pagination-template responsive="true" [previousLabel]="'Previous'| locale" [nextLabel]="'Next'| locale" (pageChange)="getData($event)" id="pagination"></pagination-controls>
+                    </div>
+                </div>
+            </div>
+            </ng-container>
+        </div>
+</div>
+</div>
+</div>
+</div>
+
+<!--
+
+<div *ngIf="patient" id="patient-content" class="container-fluid py-2">
+  <div class="row mt-2 mb-4">
+    <div class="col">
+      <h4 class="roboto-500">Patient Info</h4>
+    </div>
+    <div *ngIf="action == 'New'">
+      <h5 (click)="patient = null" class="roboto-500 clickable btn btn-sm btn-outline-primary">Change patient</h5>
+    </div>
+    <div
+    *ngIf="this.action == 'Edit' && request.status == 'active'"
+    class="ml-2">
+      <div class="w-100 justify-content-end d-flex">
+
+        <button
+          type="submit"
+          disabled
+          class="btn btn-outline-danger tajwal-regium px-4"
+        >
+          Result is not ready
+        </button>
+      </div>
+    </div>
+  </div>
+
+    <form >
+      <div class="row neue-reg mt-3">
+        <div class="col-lg-4">
+          <div class="form-group">
+            <label for="exampleInputEmail1">First Name</label>
+            <input
+
+              required
+              pattern="^([^0-9]*)$"
+              maxlength="25"
+              name="first_name"
+              [(ngModel)]="patient['first_name']"
+              #name_input="ngModel"
+              type="text"
+              class="form-control"
+            />
+          </div>
+        </div>
+
+        <div class="col-lg-4">
+          <div class="form-group">
+            <label for="exampleInputEmail1">Last Name</label>
+            <input
+
+              required
+              pattern="^([^0-9]*)$"
+              maxlength="25"
+              [(ngModel)]="patient['last_name']"
+              name="last_name"
+              type="text"
+              class="form-control"
+              #last_name_input="ngModel"
+            />
+          </div>
+        </div>
+
+        <div class="col-lg-4">
+          <div class="form-group">
+            <label for="exampleInputEmail1">Phone number</label>
+            <input
+
+              required
+              [(ngModel)]="patient['phone_number']"
+              name="phone_number"
+              type="text"
+              class="form-control"
+              #last_name_input="ngModel"
+            />
+          </div>
+        </div>
+
+      </div>
+
+      <div class="row neue-reg">
+        <div class="col-lg-3">
+          <div class="form-group">
+            <label for="civility">Civility</label>
+
+            <input
+              class="form-control"
+              name="civility"
+
+              [(ngModel)]="patient['civility']"
+            />
+
+          </div>
+        </div>
+
+        <div class="col-lg-3">
+          <div class="form-group">
+            <label for="civility">Gender</label>
+
+            <input
+              class="form-control"
+              name="gender"
+
+              [(ngModel)]="patient['gender']"
+            />
+
+
+          </div>
+        </div>
+
+        <div class="col-lg-4">
+          <div class="form-group">
+            <label for="picker">Birthdate</label>
+            <input
+              class="form-control"
+              name="birthdate"
+
+              [ngModel]="patient['birthdate'] | theDate"
+            />
+          </div>
+        </div>
+
+        <div class="col-lg-2">
+          <div class="form-group">
+            <label for="exampleInputEmail1">Age</label>
+            <input
+              readonly
+              pattern="^(0|[1-9][0-9]*)$"
+              maxlength="3"
+              [ngModel]="(patient['birthdate'] | ago) ||''"
+              name="age"
+              type="text"
+              class="form-control"
+              #age_input="ngModel"
+            />
+
+          </div>
+        </div>
+
+      </div>
+    </form>
+</div> -->
+
+<!-- Modal -->
+<div class="modal fade" id="download_upload_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalCenterTitle">
+                    {{ download_upload_modal_data.title | locale}}
+                </h5>
+
+            </div>
+            <div class="modal-body">
+                <form #download_form="ngForm" (ngSubmit)="download(download_form)">
+                    <div class="form-group">
+                        <label for="reception_number">{{'Request #' | locale}}</label>
+                        <input ngModel name="reception_number" type="text" class="form-control" [placeholder]="'Request #' | locale" />
+                    </div>
+
+                    <div class="form-group">
+                        <label for="correspondent">{{'Lab' | locale}}</label>
+                        <select *ngIf="correspondents | async as corres" [ngModel]="corres | find:'lab_id'" name="correspondent" id="correspondent" class="custom-select">
+              <ng-container *ngFor="let correspondent of corres">
+                <option
+                  *ngIf="correspondent.lab_id"
+                  [ngValue]="correspondent"
+                >
+                  {{ correspondent.name }}
+                </option>
+              </ng-container>
+            </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          {{'Close' | locale}}
+        </button>
+                <button (click)="download_form.ngSubmit.emit()" type="button" class="btn btn-primary">
+          {{ download_upload_modal_data.title | locale }}
+        </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="modal fade" id="profile_tests_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5>Select tests</h5>
+            </div>
+
+            <div class="modal-body">
+                <div class="container-fluid px-4 mt-3">
+                    <div>
+                        <form id="profile_tests_form" #profile_tests_form="ngForm" (ngSubmit)="setProfileTests(profile_tests_form)">
+
+                            <div class="container-fluid">
+                                <div class="row justify-content-around">
+                                    <button (click)="profile_tests_select_all(false)" type="button" class="col-5 form-control">Select All</button>
+                                    <button (click)="profile_tests_select_all(true)" type="button" class="col-5 form-control">Unselect All</button>
+                                </div>
+                            </div>
+
+                            <div *ngFor="let test of profile_tests" class="col-12 p-4">
+                                <div class="d-flex h-100 align-items-center">
+                                    <div class="">
+                                        <div class="custom-control custom-checkbox">
+                                            <!-- [(ngModel)]="request.urgent_flag" -->
+                                            <input [name]="test.id" [ngModel]="!test.disabled" [disabled]="test.disabled" type="checkbox" class="custom-control-input" [id]="'profile_tests|' + test.id" (focus)="check_if_exisit('profile_tests|' + test.id, test.id)" />
+                                            <label class="custom-control-label" [for]="'profile_tests|' + test.id">{{
+                        test.name
+                      }}</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+
+                <button form="profile_tests_form" type="submit" class="btn btn-primary">
+          Done
+        </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="reasonModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5>{{"Delete Reason" | locale}}</h5>
+            </div>
+
+            <div class="modal-body">
+                <div class="container-fluid px-4 mt-3">
+                    <div>
+                        <input name="reason" id="reason" class="form-control" [placeholder]="'Reason' | locale" [(ngModel)]="reason" #reason_input>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button (click)="addReasons(reason_input)" type="button" class="btn btn-danger">
+          {{"Delete" | locale}}
+        </button>
+            </div>
+        </div>
+    </div>
+</div>

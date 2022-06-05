@@ -1,0 +1,63 @@
+<form
+  id="draw_sample_form"
+  #draw_sample_form="ngForm"
+  (ngSubmit)="onSubmit(draw_sample_form)"
+>
+  <div class="modal-body">
+    <div class="row">
+      <div class="col-lg-12">
+        <label style="display: block; text-align: start">{{
+          "Doctor" | locale
+        }}</label>
+
+        <ng-container *ngIf="!doctor">
+          <app-item-select
+            [no_label]="true"
+            top="67px"
+            (setSelectedItem)="doctor = $event"
+            title="doctors"
+          ></app-item-select>
+        </ng-container>
+        <ng-container *ngIf="doctor">
+          <button (click)="doctor = null" class="btn btn-light border col-12">
+            {{ doctor.name }}
+          </button>
+          <input
+            type="hidden"
+            value="{{ doctor.id }}"
+            [(ngModel)]="doctor.id"
+            name="doctor_id"
+          />
+        </ng-container>
+      </div>
+      <div class="col-lg-12">
+        <div class="form-group">
+          <label>{{ "Draw Time" | locale }}</label>
+
+          <input [ngModel]="dateTime" class="flatpickr flatpickr-input active form-control" type="date"
+          [placeholder]="'Draw Time' | locale"  autocomplete="off" name="draw_time"  id="draw_time" />
+
+          <!-- <input
+            type="datetime-local"
+            class="form-control"
+            [ngModel]="dateTime"
+            name="draw_time"
+            required
+          /> -->
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button
+      class="btn ripple btn-primary"
+      form="draw_sample_form"
+      type="submit"
+    >
+      {{ "Add" | locale }}
+    </button>
+    <button class="btn ripple btn-secondary" data-dismiss="modal" type="button">
+      {{ "Cancel" | locale }}
+    </button>
+  </div>
+</form>

@@ -1,0 +1,235 @@
+
+
+<ng-container >
+
+
+
+  <div class="row ">
+    <div class="col">
+      <h2 class="roboto-300 start">{{'Search' | locale}}</h2>
+    </div>
+    <div class="col-12 col-lg-2 mt-3 mt-lg-0">
+      <div class="d-flex w-100 justify-content-end ">
+        <button  data-toggle="modal" data-target="#param-modal"
+         type="button" id="add-button" class="btn btn-outline-primary w-100 roboto-400" (click)="print()"> {{'Print' | locale}} </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="card mt-4 mb-5">
+    <div class="container-fluid py-3 px-4">
+
+      <div  class="row mt-2">
+        <ng-container *ngFor="let filter of filters">
+          <div *ngIf="(filter.name != 'parameters' || !current_test) && (filter.name != 'Parameter_select' || current_test) "  class="col-6 my-2" style="min-width: 50%;">
+            <label>{{filter.label | locale}}</label>
+          <div *ngIf="filter['type'] == 'text'" class="form-group m-0 roboto-400">
+            <input type="text"
+            autocomplete="off"
+            (keyup)="getData(1)"
+            [(ngModel)]="filter.value"
+             class="form-control" id="param_autocomplete"
+            [placeholder]="filter.placeholder | locale">
+
+          </div>
+
+          <div *ngIf="filter['type'] == 'select'" class="form-group m-0 roboto-400">
+
+            <select
+            [disabled]="!filter.options.length"
+              class="custom-select" [(ngModel)]="filter.value"
+              (change)="getData(1)"
+            >
+              <option
+                *ngFor="let one of filter.options"
+                [value]="one.value"
+              >
+                {{ one.key | locale }}
+              </option>
+            </select>
+            <div [hidden]="filter.isLoaderHidden" class="spinner-border text-primary load" role="status">
+              <span class="sr-only ">Loading...</span>
+            </div>
+          </div>
+
+
+            <div *ngIf="filter['type'] == 'flex'">
+              <ng-container *ngIf="!filter.value">
+                <!-- (setSelectedItem)="setSelectedItem($event, flex['key'])" -->
+                <app-item-select
+                    [title]="filter.name"
+                    [no_label]="true"
+                    (setSelectedItem)="set_Item($event, filter)"
+                  ></app-item-select>
+              </ng-container>
+                <ng-container *ngIf="this[filter.assigned_to]">
+                  <button (click)="set_Item(null, filter)" class="btn btn-light border col-12">{{this[filter.assigned_to].name}}</button>
+                </ng-container>
+            </div>
+
+          <div *ngIf="filter['type'] == 'date'" class="form-group m-0 roboto-400">
+            <input
+                type="text"
+                class="form-control"
+                [id]="filter.key"
+                (change)="getData(1)"
+                [(ngModel)]="filter.value"
+                class="flatpickr flatpickr-input active form-control"
+                placeholder="Select Date.."
+              />
+          </div>
+
+      </div>
+    </ng-container>
+      </div>
+<h6 class="start">{{'Total Rows' | locale}}: <span >{{total_rows}}</span></h6>
+      <div class="row ">
+
+        <div class="col-12">
+          <div class="table-responsive  ">
+            <table class="table mt-3">
+            <thead>
+              <tr class="neue-light roboto-400">
+                <!-- <th  scope="col" > الرقم التسلسلي</th> -->
+                <th  scope="col">{{'Request #' | locale}}</th>
+                <th scope="col"> {{'Patient name' | locale}}</th>
+                <th scope="col"> {{'Correspondent' | locale}}</th>
+                <th  scope="col"> {{'Date' | locale}}</th>
+                <!-- <th scope="col"> Clinical Info</th> -->
+                <th scope="col"> {{'Category' | locale}} </th>
+                <!-- <th scope="col"> Total</th> -->
+                <th scope="col"> {{'Test | Profile' | locale}}</th>
+                <th scope="col"> {{'Parameter' | locale}}</th>
+                <th scope="col"> {{'Result' | locale}}</th>
+                <!-- <th scope="col">خيارات</th> -->
+                <!-- <th scope="col"></th> -->
+              </tr>
+
+
+
+            </thead>
+            <tbody class="neue-light ">
+              <ng-container *ngFor="let request of requests | paginate: { id:'pagination' ,
+              itemsPerPage: pagination.per_page, currentPage: pagination.current_page, totalItems: pagination.totalItems }">
+
+                 <tr valign="middle" (click)="editRequest($event,request)"  class="clickable_row roboto-400" [ngClass]="{'urgent':request.urgent_flag}">
+                  <!-- <td scope="row">{{voucher.serial_number}}</td> -->
+                  <td>{{request.reception_number || '✖'}}</td>
+                  <td>{{request.patient_name || '✖' }}</td>
+                  <td>{{request.correspondent_name || '✖'}}</td>
+                  <td >{{request.date || '✖'}}</td>
+                  <td>{{request.category_name || '✖' }}</td>
+                  <td>{{request.test_name || '✖' }}</td>
+                  <td>{{request.parameter || '✖' }}</td>
+                  <td>{{request.result || '✖' }}</td>
+
+                  <!-- <td style="width: 70px;">{{request.total }} <span class="roboto-400 cur"> &nbsp; LYD</span></td> -->
+                  <!-- <td class="flex-column "  ><a class="py-0" ><h5 class="neue-reg text-right">
+                    <i (click)="pay(order.id)" *ngIf="order.status == 'بانتظار الدفع'" class="fas fa-dollar-sign item"></i>
+                  </h5></a>
+                  </td> -->
+                  <!-- <td width="15%"><button [disabled]="!(order.order_state_id == 1 || order.order_state_id == 2) " (click)="cancelOrder(order.id)" class=" btn btn-outline-secondary " > الغاء الطلب</button></td> -->
+                </tr>
+              </ng-container>
+
+
+
+            </tbody>
+
+
+            </table>
+
+
+          </div>
+        </div>
+
+
+          <div class="col-12 mt-3">
+              <div class="w-100 d-flex justify-content-center neue-med p-0">
+                  <pagination-controls
+                  pagination-template
+                  responsive="true"
+                  [previousLabel]="'Previous' | locale"
+                  [nextLabel]="'Next' | locale"
+                   (pageChange)="getData($event)"
+                   id="pagination"></pagination-controls>
+              </div>
+          </div>
+
+
+
+      </div>
+
+
+    </div>
+  </div>
+
+</ng-container>
+
+<!-- <router-outlet></router-outlet> -->
+
+<!-- Modal -->
+<div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+    <div class="modal-content">
+
+      <div class="modal-body">
+
+
+        <div class="container-fluid px-4">
+          <div class="row mt-4">
+            <div class="col-12">
+                <h5  class="roboto-500">Select a patient</h5>
+            </div>
+          </div>
+        </div>
+
+        <app-patient-select></app-patient-select>
+
+
+        <div class="container-fluid px-4 mt-3">
+          <div class="row">
+            <div class="col-12">
+                <h5  class="roboto-500">or create new</h5>
+            </div>
+          </div>
+        </div>
+
+
+        <app-new-patient (patientCreated)="onPatientCreated($event)" [action]="{'type' : 'New' }" ></app-new-patient>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+<div class="modal fade" id="summery_modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+    <div class="modal-content">
+
+      <div class="modal-body">
+
+
+        <div class="container-fluid px-4">
+
+          <ng-container *ngIf="summery_patientId && summery_request_id">
+            <app-request-summary [patientId]="summery_patientId"
+            [request_id]="summery_request_id" ></app-request-summary>
+          </ng-container>
+        </div>
+
+
+
+
+
+      </div>
+    </div>
+  </div>
+</div>

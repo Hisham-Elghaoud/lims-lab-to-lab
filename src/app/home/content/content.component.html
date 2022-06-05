@@ -1,0 +1,54 @@
+<app-loading [type]="'main'"></app-loading>
+
+<div style="display: flex; flex-direction: column; height: 100vh !important">
+  <div style="flex: 1; overflow: hidden scroll" class="px-lg-1 mt-5 mt-lg-0">
+    <div class="container-fluid mt-5">
+      <app-title></app-title>
+
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+
+  <div *ngIf="roles.length > 1" class="bg-white bottom-navbar">
+    <div class="container">
+      <div class="row justify-content-center">
+        <p
+          (click)="navigate(role.name)"
+          style="color: black; cursor: pointer"
+          [ngStyle]="current_role == role.name ? { color: '#007bff' } : {}"
+          class="m-2 p-2 h6 text-center card"
+          [ngClass]="{ role_link: current_role != role.name }"
+          *ngFor="let role of roles"
+        >
+          {{ role.name | titlecase | locale }}
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div
+  class="modal fade"
+  id="payment_modal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="exampleModalCenterTitle"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="container-fluid px-4">
+          <ng-container
+            *ngIf="this.data.payment_patientId && this.data.payment_request_id"
+          >
+            <app-payment
+              [patientId]="this.data.payment_patientId"
+              [request_id]="this.data.payment_request_id ? this.data.payment_request_id : null"
+            ></app-payment>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

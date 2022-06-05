@@ -1,0 +1,7 @@
+<div [ngStyle]="data.isRTL? {direction:'rtl'}: {direction:'ltr'}">
+
+  <div *ngIf="!prevent_viewing">
+    <router-outlet></router-outlet>
+  </div>
+
+</div>

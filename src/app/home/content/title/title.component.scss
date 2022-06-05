@@ -1,0 +1,79 @@
+
+.item{
+  border-style: none;
+  cursor: pointer;
+  padding: 10px;
+  border-radius: 30px;
+  transition : all 0.5s;
+}
+
+.item:hover{
+  background-color: rgb(216, 216, 216);
+  border-style: none;
+
+
+}
+
+.item:focus {
+  outline:0;
+}
+
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+li {
+  float: left;
+}
+
+li a {
+  display: block;
+  text-align: center;
+  padding: 6px;
+  text-decoration: none;
+}
+
+.cart-badge::after{
+
+  color: white;
+  content: attr(data-value);
+  display: flex;
+  width: 19px;
+  height: 19px;
+  justify-content: center;
+  background-color: #ba181d;
+  border-radius: 30px;
+  position: absolute;
+  top: 0px;
+  z-index: 1000;
+
+}
+
+.dropdown-toggle{
+  border-top-right-radius: 30px !important;
+  border-bottom-right-radius: 30px !important;
+  width: 100%;
+}
+
+.form-control{
+  height: auto !important;
+}
+
+
+.input-group-append{
+  width: 30% !important;
+}
+
+
+.dropdown-menu{
+  line-height: 40px;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+span{
+  cursor: pointer;
+}

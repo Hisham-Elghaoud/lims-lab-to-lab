@@ -1,0 +1,67 @@
+
+
+
+  <div class="container-fluid py-3 px-4">
+
+
+
+    <div class="row mt-2">
+
+      <div class="col-12">
+        <div class="form-group m-0">
+
+          <input (keyup)="onChange($event.target.value)"  autocomplete="off" type="text" (blur)="hide()"  class="form-control" id="patient_autocomplete"
+          [placeholder]="'Search by patient name, ID or phone number or national id' | locale">
+
+          <div style="max-height: 350px; overflow-y: scroll;"  class="dropdown-menu patient">
+
+            <div class="table-responsive ">
+              <table class="table ">
+              <thead>
+                <tr class="neue-light ">
+                  <!-- <th  scope="col" > الرقم التسلسلي</th> -->
+                  <th width="15%" scope="col"> {{'id' | locale}}</th>
+                  <th scope="col"> {{'Name' | locale}}</th>
+                  <th scope="col"> {{'Birthdate' | locale}}</th>
+                  <!-- <th scope="col">خيارات</th> -->
+                  <!-- <th scope="col"></th> -->
+                </tr>
+
+
+
+              </thead>
+              <br>
+
+              <tbody class="neue-light">
+                <ng-container *ngFor="let patient of patients | async">
+
+                   <tr valign="middle" (mousedown)="$event.preventDefault()" (click)="pick(patient)"  class="clickable_row ">
+                    <!-- <td scope="row">{{voucher.serial_number}}</td> -->
+                    <td>{{patient.custom_id}}</td>
+                    <td>{{patient.name }}</td>
+                    <td>{{patient.birth_year + '-' + patient.birth_month + "-" +  patient.birth_day}}</td>
+                    <!-- <td class="flex-column "  ><a class="py-0" ><h5 class="neue-reg text-right">
+                      <i (click)="pay(order.id)" *ngIf="order.status == 'بانتظار الدفع'" class="fas fa-dollar-sign item"></i>
+                    </h5></a>
+                    </td> -->
+                    <!-- <td width="15%"><button [disabled]="!(order.order_state_id == 1 || order.order_state_id == 2) " (click)="cancelOrder(order.id)" class=" btn btn-outline-secondary " > الغاء الطلب</button></td> -->
+                  </tr>
+                </ng-container>
+
+
+
+              </tbody>
+              </table>
+            </div>
+            <!-- <a *ngFor="let test of tests" class="dropdown-item" href="#">{{test.name}}</a>
+            <a *ngFor="let test of tests" class="dropdown-item" href="#">{{test.name}}</a> -->
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+
+  </div>
+

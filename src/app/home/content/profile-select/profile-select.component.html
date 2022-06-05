@@ -1,0 +1,69 @@
+
+
+
+
+
+
+    <div class="row mt-2">
+
+      <div class="col-12">
+        <div class="form-group m-0">
+
+          <input autocomplete="off" type="text" (blur)="hide()"  class="form-control" id="profile_autocomplete"
+          placeholder="Search by profile code to add">
+
+          <div  class="dropdown-menu">
+
+            <div class="table-responsive ">
+              <table class="table ">
+              <thead>
+                <tr class="neue-light ">
+                  <!-- <th  scope="col" > الرقم التسلسلي</th> -->
+                  <th width="15%" scope="col"> Code</th>
+                  <th scope="col"> Name</th>
+                  <th scope="col"> Amount</th>
+
+                  <!-- <th scope="col"> Category</th> -->
+                  <!-- <th scope="col">خيارات</th> -->
+                  <!-- <th scope="col"></th> -->
+                </tr>
+
+
+
+              </thead>
+              <br>
+
+              <tbody class="neue-light">
+                <ng-container *ngFor="let profile of profiles | async">
+
+                   <tr valign="middle" (mousedown)="$event.preventDefault()" (click)="set(profile)"  class="clickable_row ">
+                    <!-- <td scope="row">{{voucher.serial_number}}</td> -->
+                    <td>{{profile.code}}</td>
+                    <td>{{profile.name }}</td>
+                    <td>{{profile.amount + data.info['currency']}} </td>
+
+                    <!-- <td>{{profile.category}}</td> -->
+                    <!-- <td class="flex-column "  ><a class="py-0" ><h5 class="neue-reg text-right">
+                      <i (click)="pay(order.id)" *ngIf="order.status == 'بانتظار الدفع'" class="fas fa-dollar-sign item"></i>
+                    </h5></a>
+                    </td> -->
+                    <!-- <td width="15%"><button [disabled]="!(order.order_state_id == 1 || order.order_state_id == 2) " (click)="cancelOrder(order.id)" class=" btn btn-outline-secondary " > الغاء الطلب</button></td> -->
+                  </tr>
+                </ng-container>
+
+
+
+              </tbody>
+              </table>
+            </div>
+            <!-- <a *ngFor="let test of tests" class="dropdown-item" href="#">{{test.name}}</a>
+            <a *ngFor="let test of tests" class="dropdown-item" href="#">{{test.name}}</a> -->
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+
+

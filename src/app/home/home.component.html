@@ -1,0 +1,23 @@
+<app-nav></app-nav>
+
+
+<!-- <div  (mouseover)="hover=true" (mouseout)="hover=false"
+ id="mySidenav"
+ class="sidenav"
+ >
+  <a style="z-index: 2;" id="about">Admin</a>
+</div> -->
+
+
+<div   class="wrapper">
+
+
+  <app-sidebar></app-sidebar>
+  <app-content [ngStyle]="data.isRTL? {left:0}: {right:0}"  id="content" ></app-content>
+
+
+
+</div>
+
+
+

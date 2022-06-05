@@ -1,0 +1,18 @@
+.clickable:hover{
+  background-color: hsl(0, 0%, 98%);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+h4
+{
+  color: #007bff;
+}
+
+.dropdown-toggle.rtl::after {
+  left: 20px!important;
+  right: unset!important;
+}
+
+
+

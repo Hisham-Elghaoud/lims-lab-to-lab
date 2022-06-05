@@ -1,0 +1,75 @@
+
+
+<ng-container *ngIf="this.router.url === '/activity'">
+
+  <div class="row">
+    <div class="col">
+      <h2 class="roboto-300 start">{{'Activity log' | locale}}</h2>
+    </div>
+  </div>
+
+  <div class="card mb-5 mt-5">
+    <div class="container-fluid py-3 px-4">
+
+
+
+      <div class="row mt-2">
+
+
+
+        <div class="col-12 col-lg-10 ">
+
+          <div class="form-group m-0 roboto-400">
+
+            <input type="text"
+             class="form-control " id="code"
+            [placeholder]="'Search by request code' | locale">
+
+            <!-- <i  class="fas search-icon fa-search"></i> -->
+
+          </div>
+
+      </div>
+
+        <div class="col-12 col-lg-2 mt-3 mt-lg-0">
+          <div class="d-flex w-100 justify-content-end ">
+            <button  data-toggle="modal" data-target="#param-modal"
+             type="button" id="add-button" class="btn btn-outline-primary w-100 roboto-400" (click)="activity_log()"> {{'Search' | locale}} </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+
+        <div class="col-12">
+          <div class="table-responsive  ">
+            <table class="table mt-3">
+              <thead>
+                <tr class="neue-light roboto-400">
+                  <th width="50%"  scope="col"> {{'Action' |locale}}</th>
+                  <th width="50%"  style="width:400px"> {{'Date' |locale}}</th>
+                  <!-- <th  style="width:200px"> Time</th> -->
+                </tr>
+              </thead>
+              <br>
+              <tbody class="neue-light mt-2">
+                <ng-container *ngFor="let activity of (activity$ | async) ">
+                  <tr  valign="middle"  class="clickable_row roboto-400">
+                    <td width="50%" scope="col">{{activity.action}}</td>
+                    <td width="50%" style="width:400px">{{activity.created_at | date: "full"}}</td>
+                    <!-- <td style="width:200px">{{activity.created_at | date : 'time'}}</td> -->
+                  </tr>
+                </ng-container>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+
+    </div>
+  </div>
+
+</ng-container>
+

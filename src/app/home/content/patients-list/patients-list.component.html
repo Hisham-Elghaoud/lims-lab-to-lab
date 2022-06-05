@@ -1,0 +1,154 @@
+
+
+<ng-container *ngIf="this.router.url === '/patients'">
+
+  <div class="row">
+    <div class="col">
+      <h2 class="roboto-300 start">{{'Patients List' | locale}}</h2>
+    </div>
+  </div>
+
+  <div class="card mt-5 mb-5">
+    <div class="container-fluid py-3 px-4">
+
+
+
+      <div class="row mt-2">
+
+
+        <div class="col-12 col-lg-10 ">
+
+            <div class="form-group m-0 roboto-400"><input type="text"
+              name="key" id="pat_autocomplete" class="form-control"
+              [placeholder]="'Search by patient name' | locale">
+
+
+
+            </div>
+
+        </div>
+
+        <div class="col-12 col-lg-2 mt-3 mt-lg-0">
+          <div class="d-flex w-100 justify-content-end ">
+            <button  data-toggle="modal" data-target="#modal" (click)="action = {'type' : 'New'}"
+             type="button" id="add-button" class="btn btn-outline-primary w-100 roboto-400">{{'Add' | locale}} +</button>
+          </div>
+        </div>
+
+
+      </div>
+
+      <div class="row">
+
+        <div class="col-12">
+          <div class="table-responsive  ">
+            <table class="table mt-3">
+            <thead>
+              <tr class="neue-light roboto-400">
+                <!-- <th  scope="col" > الرقم التسلسلي</th> -->
+                <th > {{'id' | locale:2}}</th>
+                <th > {{'Name' | locale}}</th>
+                <th > {{'Birthdate' | locale}}</th>
+                <th style="white-space: nowrap;"> {{'Correspondent ID' | locale}}</th>
+                <th > {{'Hospital ID' | locale}}</th>
+                <th > {{'Phone' | locale}}</th>
+
+                <!-- <th> Paid</th> -->
+                <th> {{'Balance' | locale}}</th>
+                <th > {{'Patient card' | locale}}</th>
+                <!-- <th scope="col">خيارات</th> -->
+                <!-- <th scope="col"></th> -->
+              </tr>
+
+
+
+            </thead>
+
+            <tbody class="neue-light mt-2">
+              <ng-container *ngFor="let patient of patients | async | paginate: { id:'pagination' ,
+              itemsPerPage: pagination.per_page, currentPage: pagination.current_page, totalItems: pagination.total }; let i = index">
+
+                 <tr  (click)="openModal({'type' : 'Edit' , 'id' : patient.id})" valign="middle"  class="clickable_row roboto-400">
+                  <!-- <td scope="row">{{voucher.serial_number}}</td> -->
+                  <td>{{i + 1}}</td>
+                  <td >{{patient.name }}</td>
+                  <td >{{patient.birth_year + '-' + patient.birth_month + "-" +  patient.birth_day | date}}</td>
+                  <td >{{patient.insurance_id || '✖'}}</td>
+                  <td >{{patient.hospital_id || '✖'}}</td>
+                  <td >{{patient.phone_number  || '✖'}}</td>
+                  <!-- <td>{{patient.payment.paid}} LYD</td> -->
+                  <td >{{patient.payment.unpaid + data.info['currency']}} </td>
+                  <td >
+
+                    <button  (click)="$event.stopPropagation();print(patient.id)" type="button" class="btn btn-outline-info p-0 px-3">
+                    {{'Print' | locale}}
+                      <!-- <i class="far fa-print"></i> -->
+                    </button>
+
+
+                  </td>                  <!-- <td class="flex-column "  ><a class="py-0" ><h5 class="neue-reg text-right">
+                    <i (click)="pay(order.id)" *ngIf="order.status == 'بانتظار الدفع'" class="fas fa-dollar-sign item"></i>
+                  </h5></a>
+                  </td> -->
+                  <!-- <td width="15%"><button [disabled]="!(order.order_state_id == 1 || order.order_state_id == 2) " (click)="cancelOrder(order.id)" class=" btn btn-outline-secondary " > الغاء الطلب</button></td> -->
+                </tr>
+              </ng-container>
+
+
+
+            </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="col-12 mt-3">
+          <div class="w-100 d-flex justify-content-center neue-med p-0">
+              <pagination-controls
+              responsive="true"
+              [previousLabel]="'Previous' | locale"
+              [nextLabel]="'Next' | locale"
+               (pageChange)="getPatients(key,true,$event)"
+               id="pagination"></pagination-controls>
+          </div>
+       </div>
+
+      </div>
+
+
+    </div>
+  </div>
+
+</ng-container>
+
+<!-- <router-outlet></router-outlet> -->
+
+<!-- Modal -->
+<div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+
+
+    <div class="modal-content">
+
+      <app-loading [type]="'dialog'"></app-loading>
+
+      <div class="modal-body">
+
+
+        <div class="container-fluid px-4 mt-3">
+          <div class="row">
+            <div class="col-12">
+                <h5  class="roboto-500 start">{{(action.type + ' patient') | locale}}</h5>
+            </div>
+          </div>
+        </div>
+
+
+        <app-new-patient (patientCreated)="onPatientCreated($event)" [action]="action" ></app-new-patient>
+
+
+      </div>
+    </div>
+  </div>
+</div>
+
+

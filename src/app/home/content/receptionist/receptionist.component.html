@@ -1,0 +1,337 @@
+<ng-container *ngIf="rec">
+    <div class="row">
+        <div class="col">
+            <h2 class="roboto-300 start">
+                {{ rec.first_name + " " + rec.middle_name + " " + rec.last_name }}
+            </h2>
+        </div>
+        <ng-container *ngIf="transaction">
+
+
+            <div style="display: flex; align-items: center" class="mx-3">
+                <div class="form-group form-check start mb-0">
+                    <input type="checkbox" class="form-check-input" name="excel" [(ngModel)]="excel2" [checked]="excel2" id="excel2" />
+                    <label class="form-check-label" [ngClass]="{ 'mr-4': data.isRTL }" for="excel">{{ "Excel" | locale }}</label
+              >
+            </div>
+          </div>
+  
+          <button
+            data-toggle="modal"
+            data-target="#clinic-modal"
+            type="button"
+            id="add-button"
+            style="height:fit-content"
+            class="btn btn-primary roboto-400 px-5 my-auto"
+            (click)="print_transaction()"
+          >
+            {{ "Print" | locale }}
+          </button>
+  
+  
+  
+      </ng-container>
+  
+      <ng-container  *ngIf="request">
+  
+        <div style="display: flex; align-items: center">
+          <div class="form-group form-check start mb-0">
+            <input
+              type="checkbox"
+              class="form-check-input"
+              name="withTests"
+              [(ngModel)]="withTests"
+              [checked]="withTests"
+              id="withTests"
+            />
+            <label
+              class="form-check-label"
+              [ngClass]="{ 'mr-4': data.isRTL }"
+              for="withTests"
+              >{{ "With tests" | locale }}</label
+            >
+          </div>
+        </div>
+  
+        <div style="display: flex; align-items: center" class="mx-3">
+          <div class="form-group form-check start mb-0">
+            <input
+              type="checkbox"
+              class="form-check-input"
+              name="excel"
+              [(ngModel)]="excel"
+              [checked]="excel"
+              id="excel"
+            />
+            <label
+              class="form-check-label"
+              [ngClass]="{ 'mr-4': data.isRTL }"
+              for="excel"
+              >{{ "Excel" | locale }}</label
+            >
+          </div>
+        </div>
+  
+            <button
+              (click)="print_requests_pdf()"
+              style="height: fit-content;"
+              class="btn btn-primary px-5 my-auto"
+            >
+              {{ "Print" | locale }}
+            </button>
+  
+      </ng-container>
+    </div>
+  
+    <div class="card mb-5 mt-5">
+      <div class="container-fluid py-3 px-4">
+        <div class="row mt-2">
+          <div class="col-8 mt-3 mt-lg-0">
+            <div class="d-flex w-100 justify-content-start">
+              <h3
+                (click)="
+                  rev = true; transaction = false; request = false; sendRequest()
+                "
+                class="btn mr-2"
+                [ngClass]="{ 'btn-primary': rev, 'btn-outline-primary': !rev }"
+              >
+                {{ "Revenue" | locale }}
+              </h3>
+              <h3
+                (click)="
+                  request = true; rev = false; transaction = false; sendRequest()
+                "
+                class="btn mr-2"
+                [ngClass]="{
+                  'btn-primary': request,
+                  'btn-outline-primary': !request
+                }"
+              >
+                {{ "Requests" | locale }}
+              </h3>
+              <h3
+                (click)="
+                  transaction = true; rev = false; request = false; sendRequest()
+                "
+                class="btn mr-2"
+                [ngClass]="{
+                  'btn-primary': transaction,
+                  'btn-outline-primary': !transaction
+                }"
+              >
+                {{ "transactions" | locale }}
+              </h3>
+            </div>
+          </div>
+          <div class="col-4 mt-3 mt-lg-0" *ngIf="!rev">
+            <!-- <div class="d-flex w-100 justify-content-start"> -->
+            <h4 style="text-align:end">{{'Total' | locale}}: {{ total }}</h4>
+            <!-- </div> -->
+          </div>
+  
+          <div class="col-12">
+            <div class="row">
+              <div class="col-3">
+                <div class="form-group">
+                  <label for="fromPicker">{{'Date From' | locale}}</label>
+                    <input id="fromPicker" [(ngModel)]="from" class="flatpickr flatpickr-input active form-control" type="date" (change)="sendRequest()" placeholder="Select Date.." />
+                </div>
+            </div>
+            <div class="col-3">
+                <div class="form-group">
+                    <label for="toPicker">{{'Date To' | locale}}</label>
+                    <input id="toPicker" [(ngModel)]="to" class="flatpickr flatpickr-input active form-control" type="date" (change)="sendRequest()" placeholder="Select Date.." />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <label>{{'Time From' | locale}}</label>
+                <input type="time" class="form-control" name="from_time" (change)="sendRequest()" [(ngModel)]="from_time" class="flatpickr flatpickr-input active form-control" placeholder="Select Time.." />
+            </div>
+            <div class="col-md-3">
+                <label>{{'Time To' | locale}}</label>
+                <input type="time" class="form-control" name="to_time" (change)="sendRequest()" [(ngModel)]="to_time" class="flatpickr flatpickr-input active form-control" placeholder="Select Time.." />
+            </div>
+    </div>
+
+    <div class="row" *ngIf="request">
+        <div class="col-md-12">
+            <div class="row">
+                <div class="col-md-4">
+                    <label>{{'Correspondent' | locale}}</label>
+                    <ng-multiselect-dropdown [placeholder]="'Choose Correspondent'" [data]="correspondents" [(ngModel)]="correspondent_id" [settings]="dropdownSettings" (onSelect)="sendRequest()" (onDeSelect)="deSelectCorrespondent()">
+                    </ng-multiselect-dropdown>
+                    <!-- <select name="patient_id" [(ngModel)]="correspondent_id" (change)=" sendRequest();" class="form-control">
+                        <option value="null">All</option>
+                        <option value="{{correspondent.id}}" *ngFor="let correspondent of correspondents">{{correspondent.name}}</option>
+                      </select> -->
+                </div>
+                <div class="col-md-4">
+                    <label>{{'Patient' | locale}}</label>
+                    <ng-multiselect-dropdown [placeholder]="'Choose Patient'" [data]="patients" [(ngModel)]="patient_id" [settings]="dropdownSettings2" (onSelect)="sendRequest()" (onDeSelect)="deSelectPatient()">
+                    </ng-multiselect-dropdown>
+                    <!-- <select name="patient_id" [(ngModel)]="patient_id" (change)=" sendRequest();" class="form-control">
+                        <option value="null">All</option>
+                        <option value="{{patient.name}}" *ngFor="let patient of patients">{{patient.name}}</option>
+                      </select> -->
+                </div>
+                <div class="col-md-4">
+                    <label>{{'Payment Status' | locale}}</label>
+                    <select name="payment_status" [(ngModel)]="payment_status" (change)="sendRequest()" class="form-control">
+                      <option value="null">{{'All' | locale}}</option>
+                      <option value="paid">{{'Paid' | locale}}</option>
+                      <option value="unpaid">{{'Unpaid' | locale}}</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    </div>
+
+    <div *ngIf="rev" class="row">
+        <div class="col-12">
+            <div class="table-responsive">
+                <table class="table mt-3">
+                    <thead>
+                        <tr class="neue-light roboto-400">
+                            <th scope="col">{{'ID' | locale:2}}</th>
+                            <th scope="col">{{'Date' | locale}}</th>
+                            <th scope="col">{{'Total'| locale}}</th>
+                            <th scope="col">{{'Cash In' | locale}}</th>
+                            <!-- <th scope="col">Remaining</th> -->
+                            <!-- <th scope="col">خيارات</th> -->
+                            <!-- <th scope="col"></th> -->
+                        </tr>
+                    </thead>
+                    <br />
+
+                    <tbody class="neue-light mt-2">
+                        <ng-container *ngFor="let revenue of rec.revenues; let i = index">
+                            <tr valign="middle" class="clickable_row roboto-400">
+                                <td scope="row">{{i + 1}}</td>
+                                <td>{{ revenue.date | date }}</td>
+                                <td>
+                                    {{ revenue.patient_total }}{{ data.info["currency"] }}
+                                </td>
+                                <td>
+                                    {{ revenue.patient_paid }}{{ data.info["currency"] }}
+                                </td>
+                                <!-- <td>{{ revenue.patient_remaining }}{{data.info['currency']}}</td> -->
+
+                                <!-- <td class="flex-column "  ><a class="py-0" ><h5 class="neue-reg text-right">
+                      <i (click)="pay(order.id)" *ngIf="order.status == 'بانتظار الدفع'" class="fas fa-dollar-sign item"></i>
+                    </h5></a>
+                    </td> -->
+                                <!-- <td width="15%"><button [disabled]="!(order.order_state_id == 1 || order.order_state_id == 2) " (click)="cancelOrder(order.id)" class=" btn btn-outline-secondary " > الغاء الطلب</button></td> -->
+                            </tr>
+                        </ng-container>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div *ngIf="request" class="row">
+        <div class="col-12">
+            <div class="table-responsive">
+                <table class="table mt-3">
+                    <thead>
+                        <tr class="neue-light roboto-400">
+                            <th scope="col">{{'ID' | locale:2}}</th>
+                            <th scope="col">{{'Request #' | locale}}</th>
+                            <th scope="col">{{'Date' | locale}}</th>
+                            <th scope="col">{{'Patient' | locale}}</th>
+                            <th scope="col">{{'Total' | locale}}</th>
+                            <th scope="col">{{'Discount' | locale}}</th>
+                            <th scope="col" *ngIf="isTax">{{'Tax' | locale}}</th>
+                            <th scope="col">{{'Charged' | locale}}</th>
+                            <!-- <th scope="col">Remaining</th> -->
+                            <!-- <th scope="col">خيارات</th> -->
+                            <!-- <th scope="col"></th> -->
+                        </tr>
+                    </thead>
+                    <br />
+
+                    <tbody class="neue-light mt-2">
+                        <ng-container *ngFor="
+                      let req of requests
+                        | paginate
+                          : {
+                              id: 'pagination',
+                              itemsPerPage: pagination.per_page,
+                              currentPage: pagination.current_page,
+                              totalItems: pagination.total
+                            }; let i = index
+                    ">
+                            <tr valign="middle" class="clickable_row roboto-400">
+                                <td>{{ i + 1 }}</td>
+                                <td>{{ req.reception_number }}</td>
+                                <td>{{ req.created_at | date }}</td>
+                                <td>{{ req.patient.name }}</td>
+                                <td>{{ req.total }}{{ data.info["currency"] }}</td>
+                                <td>{{ req.discount }}{{ data.info["currency"] }}</td>
+                                <td *ngIf="isTax">{{ req.tax_avg }}%</td>
+                                <td>{{ req.total_summery }}{{ data.info["currency"] }}</td>
+                            </tr>
+                        </ng-container>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-12 mt-3">
+                <div class="w-100 d-flex justify-content-center neue-med p-0">
+                    <pagination-controls responsive="true" [previousLabel]="'Previous' | locale" [nextLabel]="'Next' | locale" (pageChange)="getRequests(id, $event)" id="pagination"></pagination-controls>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div *ngIf="transaction" class="row">
+        <div class="col-12">
+            <div class="table-responsive">
+                <table class="table mt-3">
+                    <thead>
+                        <tr class="neue-light roboto-400">
+                            <th scope="col">{{'ID' | locale:2}}</th>
+                            <th scope="col">{{'Request #' | locale}}</th>
+                            <th scope="col">{{'Time' | locale}}</th>
+                            <th scope="col">{{'Payer' | locale}}</th>
+                            <th scope="col">{{'Value' | locale}}</th>
+                            <th scope="col">{{'Payment method' | locale}}</th>
+                        </tr>
+                    </thead>
+                    <br />
+
+                    <tbody class="neue-light mt-2">
+                        <ng-container *ngFor="
+                      let req of transactions
+                        | paginate
+                          : {
+                              id: 'pagination_transactions',
+                              itemsPerPage: pagination_transactions.per_page,
+                              currentPage: pagination_transactions.current_page,
+                              totalItems: pagination_transactions.total
+                            }; let i = index
+                    ">
+                            <tr valign="middle" class="clickable_row roboto-400">
+                                <td>{{ i + 1 }}</td>
+                                <td>{{ req.patient_request.reception_number }}</td>
+                                <td>{{ req.created_at | date: "full" }}</td>
+                                <td>{{ req.payer }}</td>
+                                <td>{{ req.amount }}{{ data.info["currency"] }}</td>
+                                <td>{{ req.payment_method.name }}</td>
+                            </tr>
+                        </ng-container>
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-12 mt-3">
+                <div class="w-100 d-flex justify-content-center neue-med p-0">
+                    <pagination-controls responsive="true" [previousLabel]="'Previous' | locale" [nextLabel]="'Next' | locale" (pageChange)="getTransactions(id, $event)" id="pagination_transactions"></pagination-controls>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    </div>
+    </ng-container>
+
+    <!-- <router-outlet></router-outlet> -->

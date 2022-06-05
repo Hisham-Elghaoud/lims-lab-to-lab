@@ -1,0 +1,287 @@
+<div class="card w-100 p-4 p-xl-5 mt-1 mb-5">
+    <div class="container-fluid">
+        <div class="row my-4">
+            <div class="col">
+                <h4 class="roboto-500 start">{{'Results' | locale}}</h4>
+            </div>
+            <div>
+                <div class="w-100 justify-content-end d-flex">
+                    <ng-container *ngIf="result && (request.status == 'technically validated' || request.status == 'partially validated' ) && (request.patient_payment_status == true || user_roles.indexOf('printWhenPaid') != -1) ">
+                        <div class="px-2">
+                            <button type="button" class="btn btn-outline-success px-4" data-target="#select-tests-modal" data-toggle="modal">
+                {{'Print Results' | locale}}
+              </button>
+                        </div>
+
+                        <div class="px-2">
+                            <button *ngIf="result['status'] != 'active'" type="button" (click)="setDelivered()" class="btn btn{{
+                  result['delivery_flag'] == 0 ? '-outline' : ''
+                }}-success px-4" [disabled]="result['delivery_flag'] == 1">
+                <i class="fas fa-check"></i>
+              </button>
+                        </div>
+                    </ng-container>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-12">
+                <ng-container *ngIf="tests">
+                    <ng-container *ngFor="let test of tests; index as i">
+                        <!-- data-toggle="collapse" [attr.data-target]="'#collapse-' + i" -->
+                        <div class="accordion" id="tests-accordion">
+                            <div class="card test-section">
+                                <div class="card-header p-3" id="headingOne">
+                                    <div class="container-fluid">
+                                        <div class="row">
+                                            <div class="col-10">
+                                                <div class="d-flex align-items-center w-100">
+                                                    <h2 class="mb-0 test-section-title roboto-400">
+                                                        {{ test.name }}
+                                                        <ng-container *ngIf="test.is_casa">
+                                                            <button (click)="printCasa(request_id, test.id, reception_number)" type="button" *ngIf="test.has_file" class="btn btn-outline-success px-4 ml-4">
+                                Print Report
+                              </button>
+                                                        </ng-container>
+                                                    </h2>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- id="collapse-{{i}}" -->
+                                <div class="show" aria-labelledby="headingOne" data-parent="#tests-accordion">
+                                    <div class="container-fluid">
+                                        <ng-container *ngIf="isArray(test.parameters['data'])">
+                                            <ng-container *ngFor="
+                          let param of test.parameters['data'];
+                          index as j
+                        ">
+                                                <div (click)="$event.stopPropagation()" *ngIf="param.results" class="row px-4 py-4 test-row">
+                                                    <div class="col-12 col-lg-2">
+                                                        <h5 class="roboto-400">{{ param.name }}</h5>
+                                                    </div>
+
+                                                    <div class="col-12 col-lg-10">
+                                                        <div hidden #loader id="load{{ i }}-{{ j }}" class="spinner-border text-primary load" role="status">
+                                                            <span class="sr-only">Loading...</span>
+                                                        </div>
+
+                                                        <div class="d-flex justify-content-center w-100">
+                                                            <div class="form-group m-0 w-100">
+                                                                <form>
+                                                                    <!-- <div class="">
+                                      <button  hidden #save id="save{{i}}-{{j}}"
+                                       type="submit"  class="btn save-btn btn-success py-0 roboto-400  btn-result">Save
+                                      </button>
+                                    </div> -->
+
+                                                                    <ng-container *ngIf="param.results">
+                                                                        <input #result_input readonly [ngModel]="param.results.result" (click)="$event.stopPropagation()" name="result{{ i }}-{{ j }}" required id="result{{ i }}-{{ j }}" type="text" class="form-control" placeholder="Enter Result" />
+                                                                    </ng-container>
+
+                                                                    <!-- <ng-container *ngIf="!param.results">
+
+                                      <input #result_input readonly  [ngModel]="''" (click)="$event.stopPropagation();"  name="result{{i}}-{{j}}"
+                                      required
+                                      id="result{{i}}-{{j}}" type="text" class="form-control"  placeholder="Result is not ready">
+
+                                    </ng-container> -->
+
+                                                                    <ng-container *ngIf="
+                                      param.reference_ranges &&
+                                      param.reference_ranges.length != 0
+                                    ">
+                                                                        <p class="roboto-400 m-0 mt-2">
+                                                                            {{ param.reference_ranges[0].range }} {{ param.unit ? param.unit : "" }}
+                                                                        </p>
+                                                                    </ng-container>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <ng-container *ngIf="param.results.range">
+                                                        <p class="roboto-400 m-0 p-0 col-lg-4 col-4">
+                                                            {{ param.results.range.range && param.results.range.unit ? 'Ref : ' + param.results.range.range + '/' + param.results.range.unit : "" }}
+                                                        </p>
+                                                    </ng-container>
+                                                </div>
+                                            </ng-container>
+                                        </ng-container>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- <div class="card">
+                <div class="card-header" id="headingTwo">
+                  <h2 class="mb-0">
+                    <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                      Collapsible Group Item #2
+                    </button>
+                  </h2>
+                </div>
+                <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#tests-accordion">
+                  <div class="card-body">
+                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+                  </div>
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-header" id="headingThree">
+                  <h2 class="mb-0">
+                    <button class="btn btn-link btn-block text-left collapsed" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                      Collapsible Group Item #3
+                    </button>
+                  </h2>
+                </div>
+                <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#tests-accordion">
+                  <div class="card-body">
+                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+                  </div>
+                </div>
+              </div> -->
+                        </div>
+                    </ng-container>
+                </ng-container>
+            </div>
+
+            <ng-container *ngIf="profiles">
+                <ng-container *ngFor="let profile of profiles">
+                    <div class="col-12">
+                        <ng-container *ngIf="profile.test.data">
+                            <ng-container *ngFor="let test of profile.test.data; index as i">
+                                <!-- data-toggle="collapse" [attr.data-target]="'#collapse-' + i" -->
+                                <div class="accordion" id="tests-accordion">
+                                    <div class="card test-section">
+                                        <div class="card-header p-3" id="headingOne">
+                                            <div class="container-fluid">
+                                                <div class="row">
+                                                    <div class="col-10">
+                                                        <div class="d-flex align-items-center w-100">
+                                                            <h2 class="mb-0 test-section-title roboto-400">
+                                                                {{ test.name }}
+                                                            </h2>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- id="collapse-{{i}}" -->
+                                        <div class="show" aria-labelledby="headingOne" data-parent="#tests-accordion">
+                                            <div class="container-fluid">
+                                                <ng-container *ngIf="isArray(test.parameters['data'])">
+                                                    <ng-container *ngFor="
+                              let param of test.parameters['data'];
+                              index as j
+                            ">
+                                                        <div (click)="$event.stopPropagation()" *ngIf="param.results" class="row px-4 py-4 test-row">
+                                                            <div class="col-12 col-lg-2">
+                                                                <h5 class="roboto-400">{{ param.name }}</h5>
+                                                            </div>
+
+                                                            <div class="col-12 col-lg-10">
+                                                                <div class="d-flex justify-content-center w-100">
+                                                                    <div class="form-group m-0 w-100">
+                                                                        <form>
+                                                                            <!-- <div class="">
+                                        <button  hidden #save id="save{{i}}-{{j}}"
+                                        type="submit"  class="btn save-btn btn-success py-0 roboto-400  btn-result">Save
+                                        </button>
+                                      </div> -->
+
+                                                                            <ng-container *ngIf="param.results">
+                                                                                <input #result_input readonly [ngModel]="param.results.result" (click)="$event.stopPropagation()" name="result{{ i }}-{{ j }}" required id="result{{ i }}-{{ j }}" type="text" class="form-control" placeholder="Enter Result" />
+                                                                            </ng-container>
+
+                                                                            <ng-container *ngIf="!param.results">
+                                                                                <input #result_input [ngModel]="''" (click)="$event.stopPropagation()" name="result{{ i }}-{{ j }}" required id="result{{ i }}-{{ j }}" type="text" class="form-control" placeholder="Result is not ready" />
+                                                                            </ng-container>
+
+                                                                            <ng-container *ngIf="
+                                          param.reference_ranges &&
+                                          param.reference_ranges.length != 0
+                                        ">
+                                                                                <p class="roboto-400 m-0 mt-2">
+                                                                                    {{ param.reference_ranges[0].range }} {{ param.unit ? param.unit : "" }}
+                                                                                </p>
+                                                                            </ng-container>
+                                                                        </form>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </ng-container>
+                                                </ng-container>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </ng-container>
+                        </ng-container>
+                    </div>
+                </ng-container>
+            </ng-container>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="select-tests-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5>{{'Select tests to print' | locale}}</h5>
+            </div>
+
+            <div class="modal-body">
+                <div class="container-fluid px-4 mt-3">
+                    <div class="row">
+                        <form id="selectTestsForm" #selectTestsForm="ngForm" (ngSubmit)="print(selectTestsForm)">
+                            <div *ngFor="let test of tests" class="col-12 p-4">
+                                <div class="d-flex h-100 align-items-center">
+                                    <div class="">
+                                        <div class="custom-control custom-checkbox">
+                                            <!-- [(ngModel)]="request.urgent_flag" -->
+                                            <input [name]="test.id" [ngModel]="test.status == 'validated'" [disabled]="test.status != 'validated'" type="checkbox" class="custom-control-input" [id]="'selectTests|' + test.id" />
+                                            <label class="custom-control-label" [for]="'selectTests|' + test.id">{{
+                        test.name
+                      }}</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <div class="custom-control custom-checkbox py-2">
+                    <input name="withDevices" [(ngModel)]="devices" type="checkbox" class="custom-control-input" id="customCheckDevices" />
+                    <label class="custom-control-label" for="customCheckDevices">{{'with devices?' | locale}}</label
+          >
+
+        </div>
+
+        <div class="custom-control custom-checkbox py-2">
+          <input
+            name="withAreas"
+            [(ngModel)]="areas"
+            type="checkbox"
+            class="custom-control-input"
+            id="customCheckAreas"
+          />
+          <label class="custom-control-label" for="customCheckAreas"
+            >{{'with categories?' | locale}}</label
+          >
+
+        </div>
+
+        <button form="selectTestsForm" type="submit" class="btn btn-primary">
+          {{'Print' | locale}}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

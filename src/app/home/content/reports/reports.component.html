@@ -1,0 +1,276 @@
+
+
+<ng-container *ngIf="this.router.url === '/reports'">
+
+
+
+  <div class="row justify-content-between">
+    <div class="col">
+      <h2 class="roboto-300 start">{{'Reports' | locale}}</h2>
+    </div>
+    <div>
+      <div class="container-fluid">
+        <div class="row">
+          <button (click)='printInvoice()' class="btn btn-outline-primary mx-2" style="width:200px" >{{'Info Bill' | locale}}</button>
+          <button (click)='print()' class="btn btn-outline-primary" style="width:200px" >{{'Print' | locale}}</button>
+
+        </div>
+
+        <div class="start">
+          <div class="form-group form-check mb-0 mt-2">
+            <input
+              type="checkbox"
+              name="isSeparate"  [(ngModel)]="isSeparate"
+              class="form-check-input"
+              id="customCheck1"
+            />
+            <label class="form-check-label" [ngClass]="{'mr-4' : data.isRTL}" for="customCheck1">{{'Info Bill Separate Pages' | locale}}</label>
+          </div>
+
+          <div class="form-group form-check mb-0 mt-2">
+            <input
+              type="checkbox"
+              name="isExcel"  [(ngModel)]="isExcel"
+              class="form-check-input"
+              id="customCheck2"
+            />
+            <label class="form-check-label" [ngClass]="{'mr-4' : data.isRTL}" for="customCheck2">{{'Excel' | locale}}</label>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+
+
+  </div>
+
+
+
+  <div class="card mt-4 mb-5">
+    <div class="container-fluid py-3 px-4">
+
+
+      <div   class="row mt-2">
+        <div class="col-12 mx-auto">
+          <div class="container">
+            <div class="row">
+              <div *ngFor="let key of globals_keys" class="col start p-2">
+                <div class="card">
+
+                  <div class="card-body p-2 px-3">
+                    <p class="mb-0 pb-0 text-dark">
+                      {{key | titlecase | locale}}
+                    </p>
+                    <p class="mb-0 pb-0">{{payments[key]}}</p>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <br>
+        <ng-container *ngFor="let filter of filters">
+          <div [class]="filter.col + ' my-2'"  >
+            <label>{{filter.label | locale}}</label>
+          <div *ngIf="filter['type'] == 'text'" class="form-group m-0 roboto-400">
+            <input type="text"
+            autocomplete="off"
+            (keyup)="getData(1)"
+            [(ngModel)]="filter.value"
+             class="form-control" id="param_autocomplete"
+            [placeholder]="filter.placeholder | locale">
+            <!-- <i [hidden]="!filter.isLoaderHidden" class="fas search-icon fa-search"></i> -->
+            <!-- <div [hidden]="filter.isLoaderHidden" class="spinner-border text-primary load" role="status">
+              <span class="sr-only ">Loading...</span>
+            </div> -->
+          </div>
+
+          <div *ngIf="filter['type'] == 'select'" class="form-group m-0 roboto-400">
+
+            <select
+            [disabled]="!filter.options.length"
+              class="custom-select" [(ngModel)]="filter.value"
+              (change)="getData(1)"
+            >
+              <option
+                *ngFor="let one of filter.options"
+                [ngValue]="one.value"
+              >
+                {{ one.key | locale }}
+              </option>
+            </select>
+            <div [hidden]="filter.isLoaderHidden" class="spinner-border text-primary load" role="status">
+              <span class="sr-only ">Loading...</span>
+            </div>
+          </div>
+
+<!--
+            <div *ngIf="filter['type'] == 'flex'">
+              <ng-container *ngIf="!filter.value">
+                <app-item-select
+                    [title]="filter.name"
+                    [no_label]="true"
+                    (setSelectedItem)="set_Item($event, filter)"
+                  ></app-item-select>
+              </ng-container>
+                <ng-container *ngIf="this[filter.assigned_to]">
+                  <button (click)="set_Item(null, filter)" class="btn btn-light border col-12">{{this[filter.assigned_to].name}}</button>
+                </ng-container>
+            </div> -->
+
+          <div *ngIf="filter['type'] == 'date'" class="form-group m-0 roboto-400">
+            <input
+                type="text"
+                class="form-control"
+                [id]="filter.key"
+                (change)="getData(1)"
+                [(ngModel)]="filter.value"
+                class="flatpickr flatpickr-input active form-control"
+                placeholder="Select Date.."
+              />
+          </div>
+
+          <div *ngIf="filter['type'] == 'time'" class="form-group m-0 roboto-400">
+            <input
+                type="time"
+                class="form-control"
+                [id]="filter.key"
+                (change)="getData(1)"
+                [(ngModel)]="filter.value"
+                class="flatpickr flatpickr-input active form-control"
+                placeholder="Select Time.."
+              />
+          </div>
+
+      </div>
+    </ng-container>
+
+    <div class="col-lg-4 my-2">
+      <label for="">{{'Test' | locale}}</label>
+      <app-test-select  (setSelectedTest)="setSelectedTest($event)"></app-test-select>
+
+    </div>
+
+
+  </div>
+  <div *ngIf="selectedTest" class="row my-2">
+    <div class="col-12">
+      <div class="tag green-tag position-relative" >
+
+        <p>
+          {{selectedTest['name']}}
+        </p>
+
+        <div>
+             <i (click)="selectedTest = null;getData(1)" class="fas fa-minus-circle btn btn-outline-dark remove-tag p-0 text-left"></i>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+      <div class="row ">
+
+        <div class="col-12">
+          <div class="table-responsive  ">
+          <h6 class="start">{{'Requests' | locale}}: <span>{{number_of_requests}}</span></h6>
+          <!-- <div class="custom-control  custom-checkbox ">
+            <input  [(ngModel)]="selectAll"   type="checkbox"class="custom-control-input" id="customCheck">
+            <label class="custom-control-label" for="customCheck">select all Requests</label>
+          </div> -->
+            <table class="table mt-3" >
+            <thead>
+              <tr class="neue-light roboto-400">
+                <th  style="min-width: 120px;"  scope="col">{{'Request #' | locale}}</th>
+                <th  style="min-width: 120px;"  scope="col"> {{'Date' | locale}}</th>
+                <th   scope="col"style="min-width: 200px;"> {{'Patient name' | locale}}</th>
+                <th  style="min-width: 120px;" scope="col"> {{'Hospital ID' | locale}} </th>
+                <th  style="min-width: 100px;" scope="col"> {{'Correspondent' | locale}}</th>
+                <th  style="min-width: 70px;" scope="col"> {{'Correspondent ID' | locale}}</th>
+                <!-- <th scope="col" min-width="4%"> Status</th> -->
+
+                <th  style="min-width: 30px;" scope="col"> {{'Total' | locale}}</th>
+                <th  style="min-width: 30px;" scope="col"> {{'Discount' | locale}}</th>
+                <th  style="min-width: 30px;" scope="col" *ngIf="isTax"> {{'Tax' | locale}}</th>
+                <th  style="min-width: 30px;" scope="col"> {{'Charged' | locale}}</th>
+                <th  style="min-width: 30px;" scope="col"> {{'Paid' | locale}}</th>
+                <th style="min-width: 30px;" scope="col"> {{'Remaining' | locale}}</th>
+                <th scope="col" width="1%"> </th>
+              </tr>
+
+
+
+            </thead>
+            <tbody class="neue-light ">
+              <ng-container *ngFor="let request of requests | paginate: { id:'pagination' ,
+              itemsPerPage: pagination.per_page, currentPage: pagination.current_page, totalItems: pagination.totalItems }">
+
+                 <tr valign="middle"  class="clickable_row roboto-400" [ngClass]="{'urgent':request.urgent_flag}" style="justify-content: normal !important;">
+                  <td style="min-width: 120px;">{{request.reception_number}}</td>
+                  <td style="min-width: 120px;">{{request.created_at }}</td>
+                  <td style="min-width: 200px;">{{request.patient_name }}</td>
+                  <td style="min-width: 120px;">{{request.request_hospital_id || '✖' }}</td>
+                  <td style="min-width: 70px;">{{request.correspondent_name || '✖' }}</td>
+                  <td style="min-width: 100px;">{{request.patient_insurance_id || '✖' }}</td>
+
+                  <!-- <td width="4%"> {{request.status == 'deleted' ? 'Deleted' : 'Active' }}</td> -->
+                  <td style="min-width: 30px;">{{request.payment?.total }}</td>
+                  <td style="min-width: 30px;">{{request.payment?.discount }}</td>
+                  <td style="min-width: 30px;" *ngIf="isTax">{{request.payment?.tax_avg }}%</td>
+                  <td style="min-width: 30px;">{{request.payment?.total_summery }}</td>
+                  <td style="min-width: 30px;">{{(request.payment?.total_summery || 0) - (request.payment?.remaining || 0) }}</td>
+                  <td style="min-width: 30px;">{{request.payment?.remaining }}</td>
+                      <td width="1%">
+                      <!-- <div class="custom-control  custom-checkbox "> -->
+                        <input   (click)="addIdRequestForPrintInvoice(request.request_id)" type="checkbox" [id]="request.id"  >
+                        <!-- <label class="custom-control-label"  for="customCheck3">select all Requests</label> -->
+
+                      <!-- </div> -->
+
+                  </td>
+                  <!-- <td style="width: 70px;">{{request.total }} <span class="roboto-400 cur"> &nbsp; LYD</span></td> -->
+                  <!-- <td class="flex-column "  ><a class="py-0" ><h5 class="neue-reg text-right">
+                    <i (click)="pay(order.id)" *ngIf="order.status == 'بانتظار الدفع'" class="fas fa-dollar-sign item"></i>
+                  </h5></a>
+                  </td> -->
+                  <!-- <td width="15%"><button [disabled]="!(order.order_state_id == 1 || order.order_state_id == 2) " (click)="cancelOrder(order.id)" class=" btn btn-outline-secondary " > الغاء الطلب</button></td> -->
+                </tr>
+              </ng-container>
+
+
+
+            </tbody>
+
+
+            </table>
+
+          </div>
+        </div>
+
+
+          <div class="col-12 mt-3">
+              <div class="w-100 d-flex justify-content-center neue-med p-0">
+                  <pagination-controls
+                  responsive="true"
+                  [previousLabel]="'Previous' | locale"
+                  [nextLabel]="'Next' | locale"
+                   (pageChange)="getData($event)"
+                   id="pagination"></pagination-controls>
+              </div>
+          </div>
+
+
+
+      </div>
+
+
+    </div>
+  </div>
+
+</ng-container>
+
+
+
+

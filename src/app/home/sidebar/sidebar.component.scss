@@ -1,0 +1,54 @@
+i{
+  font-size: 20px !important;
+}
+
+#logout{
+  position: absolute;
+  bottom: 10px;
+}
+
+
+
+.red-item {
+
+  border-radius: 10px !important;
+
+
+
+}
+
+.red-item:hover{
+  background-color: rgba(221, 13, 65) !important;
+  color: white;
+
+}
+
+.red-item div{
+  color: rgba(221, 13, 65);;
+}
+
+.red-item div i{
+  color: rgba(221, 13, 65);;
+}
+
+.red-item:hover div{
+  color: white;
+}
+
+.red-item:hover div i{
+  color: white;
+}
+
+.roboto-400 {
+  font-size: 13px !important;
+}
+
+
+table,
+thead,
+tr,
+tbody,
+th,
+td {
+  justify-content: center;
+}

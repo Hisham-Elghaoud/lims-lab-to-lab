@@ -1,0 +1,427 @@
+<nav [ngStyle]="data.isRTL? {right:0}: {left:0}" id="sidebar" class="justify-content-center active" (mouseover)="barRolesShow()" (mouseout)="barRolesHide()">
+  <div class="w-100  d-flex justify-content-center">
+    <img src="assets/logo.svg" class="h-100" width="40px" alt="">
+
+
+  </div>
+
+  <div  class="container-fluid mt-5">
+
+    <!-- <div *ngIf="username" class="container my-2" [class.roles-nav-hide] = "rolesNavHide">
+      <div class="row justify-content-center">
+        <div class="card">
+          <div class="card-body py-2">
+            <h6 class="card-title m-0">
+              <span
+                class="mx-2" style="color:black;">{{username
+                | titlecase}}</span>
+            </h6>
+          </div>
+        </div>
+
+      </div>
+    </div> -->
+    <!-- <div *ngIf="roles.length > 1" class="container" [class.roles-nav-hide]="rolesNavHide">
+      <div class="row justify-content-center">
+        <div class="card">
+          <div class="card-body py-2">
+            <h6 class="card-title m-0">
+              <p (click)="navigate(role.name)" style="color: black; cursor: pointer;" [ngStyle]="current_role == role.name?{'color': '#007bff'}:{}" class="mx-2 text-center" [ngClass]="{'role_link': current_role != role.name }" *ngFor="let role of roles">{{role.name | titlecase | locale}}</p>
+            </h6>
+          </div>
+        </div>
+
+      </div>
+    </div> -->
+  <ng-container *ngFor="let route of routes">
+      <div *ngIf="user_roles.indexOf(route.authorized) != -1" (click)="goto('/' +route.link)" routerLinkActive="activeLink" [routerLink]="'/'+route.link" [routerLinkActiveOptions]="{exact: true}" class="row py-3  list-item mt-2">
+
+        <div class="col px-0 ">
+            <div class=" h-100 d-flex justify-content-center align-content-center">
+                <div><i [class]="route.icon"></i></div>
+            </div>
+          </div>
+          <div  *ngIf="!data.sidebarStatus" class="col-8 px-0">
+            <div class=" h-100 d-flex  align-items-center">
+                <div  class="roboto-400 text-center" href="">{{route.label | locale}}</div>
+            </div>
+          </div>
+      </div>
+    </ng-container>
+
+
+      <!-- <div (click)="openModal('rev')"  class="row py-3 mt-2 list-item ">
+        <div class="col px-0">
+          <div class=" h-100 d-flex justify-content-center align-content-center">
+              <div><i class="fas fa-cash-register"></i></div>
+          </div>
+        </div>
+        <div *ngIf="!data.sidebarStatus" class="col-8 px-0">
+          <div class=" h-100 d-flex  align-items-center">
+              <div  class="roboto-400 cor" href="">Revenue</div>
+          </div>
+        </div>
+
+
+
+      </div> -->
+
+      <div *ngIf="data.bilingual" data-target="#language" data-toggle="modal"  class="row py-3 mt-2 list-item ">
+        <div class="col px-0">
+          <div class=" h-100 d-flex justify-content-center align-content-center">
+              <div><i class="fas fa-globe"></i></div>
+          </div>
+        </div>
+        <div *ngIf="!data.sidebarStatus" class="col-8 px-0">
+          <div class=" h-100 d-flex  align-items-center">
+              <div  class="roboto-400 cor" href="">{{'Language' | locale}}</div>
+          </div>
+        </div>
+
+
+
+      </div>
+
+
+      <div (click)="openModal('cre')"  class="row py-3 mt-2 list-item ">
+        <div class="col px-0">
+          <div class=" h-100 d-flex justify-content-center align-content-center">
+              <div><i class="fas fa-user"></i></div>
+          </div>
+        </div>
+        <div *ngIf="!data.sidebarStatus" class="col-8 px-0">
+          <div class=" h-100 d-flex  align-items-center">
+              <div  class="roboto-400 cor" href="">{{'Change password' | locale}}</div>
+          </div>
+        </div>
+
+
+
+      </div>
+
+
+
+
+
+
+    <!-- <div *ngIf="!isLoggedIn()" routerLink="/login" class="row py-3 mt-2 list-item ">
+        <div class="col px-0">
+          <div class=" h-100 d-flex justify-content-center align-content-center">
+              <div><i class="fas fa-power-off"></i></div>
+          </div>
+        </div>
+        <div *ngIf="!data.sidebarStatus" class="col-8 px-0">
+          <div class=" h-100 d-flex  align-items-center">
+              <div   class="roboto-400" href="">Logout</div>
+          </div>
+        </div>
+    </div> -->
+
+
+
+
+    <div  *ngIf="isLoggedIn()" (click)="logout()"   class="row py-3 mt-2 list-item red-item ">
+      <div class="col px-0">
+        <div class=" h-100 d-flex justify-content-center align-content-center">
+            <div><i class="fas fa-power-off"></i></div>
+        </div>
+      </div>
+      <div *ngIf="!data.sidebarStatus" class="col-8 px-0">
+        <div class=" h-100 d-flex  align-items-center">
+            <div   class="roboto-400" href="">{{'Logout' | locale}}</div>
+        </div>
+      </div>
+   </div>
+
+
+
+  </div>
+
+  <div id="logout" class="container-fluid">
+
+
+  </div>
+
+
+  <!-- <ul class="list-unstyled components tajwal-medium mt-5"> -->
+
+      <!-- <li class="active">
+          <a href="#homeSubmenu"  data-toggle="collapse" role="button" aria-expanded="false" class="dropdown-toggle"><i class="fas fa-home mr-2"></i>الرئيسية</a>
+          <ul class="collapse list-unstyled" id="homeSubmenu">
+              <li>
+                  <a href="">المستخدمين</a>
+              </li>
+              <li>
+                  <a href="">الطلبات</a>
+              </li>
+              <li>
+                  <a href="">الاحصائيات</a>
+              </li>
+          </ul>
+      </li> -->
+      <!-- <li>
+      </li> -->
+
+
+
+<!--
+  </ul> -->
+
+</nav>
+
+
+<!-- <div class="modal fade" id="rev-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+
+
+    <div class="modal-content">
+
+
+      <div *ngIf="$rev | async as rev" class="modal-body">
+
+
+        <div class="container-fluid px-4 mt-3">
+          <div class="row">
+            <div class="col-12">
+                <h5  class="roboto-500">Revenue</h5>
+            </div>
+            <div *ngFor="let word of ['total' , 'paid', 'remaining']" class="col-12 text-center col-md-3 p-2 border rounded m-4">
+                <p>
+                  {{(word | titlecase)}}
+                </p>
+                <p>{{rev[word]}}</p>
+            </div>
+
+            <table class="table-borderless table-responsive table-striped">
+              <thead>
+                <tr>
+                  <th style="min-width: 170px;" scope="row">Payment Methods</th>
+                  <th class="col" *ngFor="let pm of rev.payment_methods" scope="col">{{pm.name}}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th style="min-width: 170px;" scope="row">Paid</th>
+                  <td class="col" *ngFor="let pm of rev.payment_methods" scope="col">{{pm.value}}</td>
+
+                </tr>
+              </tbody>
+            </table>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div> -->
+
+
+
+
+<div class="modal fade" id="cre-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+
+
+    <div class="modal-content">
+
+      <!-- <app-loading [type]="'dialog'"></app-loading> -->
+
+      <div class="modal-header">
+        <h5 class="title">{{'Change your credentials' | locale}}</h5>
+      </div>
+
+
+      <div class="modal-body">
+        <form #user_form="ngForm"  (ngSubmit)="change_cre(user_form)" >
+          <div class="row neue-reg mt-3">
+            <div class="col-md-12">
+              <div class="form-group">
+                <Label>{{'Current Password' | locale}}</Label>
+
+                <div class="input-group">
+
+                  <input
+                  class="form-control"
+                  [type]="show_pass? 'text':'password'"
+                  [placeholder]="'Current Password' | locale"
+                  name="current_password"
+                  #current_password="ngModel"
+                  ngModel
+                  required
+                  maxlength="25"
+                  [ngClass]="{
+                    'rad-left': data.isRTL,
+                    'rad-right': !data.isRTL
+                  }"
+                />
+                  <div class="input-group-append clickable" (click)="show_pass = !show_pass">
+                    <span
+                      class="input-group-text"
+                      [ngClass]="{
+                        'rad-left': !data.isRTL,
+                        'rad-right': data.isRTL
+                      }"
+                      ><i style="font-size:24px" class="fas"
+                      [ngClass]="{'fa-eye' : show_pass, 'fa-eye-slash' : !show_pass}"
+                      ></i></span
+                    >
+                  </div>
+                </div>
+
+
+
+              </div>
+            </div>
+          </div>
+          <div class="row neue-reg mt-3">
+
+            <div class="col-lg-6">
+
+              <div class="form-group">
+                <Label>{{'New Password' | locale}}</Label>
+
+                <div class="input-group">
+
+                  <input
+                  class="form-control"
+                  [type]="show_pass2? 'text':'password'"
+                  [placeholder]="'New Password' | locale"
+                  name="password"
+                  #password="ngModel"
+                  ngModel
+                  required
+                  maxlength="25"
+                  [ngClass]="{
+                    'rad-left': data.isRTL,
+                    'rad-right': !data.isRTL
+                  }"
+                />
+                  <div class="input-group-append clickable" (click)="show_pass2 = !show_pass2">
+                    <span
+                      class="input-group-text"
+                      [ngClass]="{
+                        'rad-left': !data.isRTL,
+                        'rad-right': data.isRTL
+                      }"
+                      ><i style="font-size:24px" class="fas"
+                      [ngClass]="{'fa-eye' : show_pass2, 'fa-eye-slash' : !show_pass2}"
+                      ></i></span
+                    >
+                  </div>
+                </div>
+
+
+
+              </div>
+
+            </div>
+
+            <div class="col-lg-6">
+
+
+
+
+
+              <div class="form-group">
+                <Label>{{'Confirm Password' | locale}}</Label>
+
+                <div class="input-group">
+
+                  <input
+                  class="form-control"
+                  [type]="show_pass3? 'text':'password'"
+                  [placeholder]="'Confirm Password' | locale"
+                  name="password_confirmation"
+                  #password_confirmation="ngModel"
+                  ngModel
+                  required
+                  maxlength="25"
+                  [ngClass]="{
+                    'rad-left': data.isRTL,
+                    'rad-right': !data.isRTL
+                  }"
+                />
+                  <div class="input-group-append clickable" (click)="show_pass3 = !show_pass3">
+                    <span
+                      class="input-group-text"
+                      [ngClass]="{
+                        'rad-left': !data.isRTL,
+                        'rad-right': data.isRTL
+                      }"
+                      ><i style="font-size:24px" class="fas"
+                      [ngClass]="{'fa-eye' : show_pass3, 'fa-eye-slash' : !show_pass3}"
+                      ></i></span
+                    >
+                  </div>
+                </div>
+
+
+
+              </div>
+
+
+            </div>
+
+              <div class="col-12">
+                  <div class="d-flex justify-content-end">
+                      <button type="submit" class="btn btn-outline-primary tajwal-regium px-5">{{'Save' | locale}} </button>
+                  </div>
+              </div>
+
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+<div class="modal fade" id="language" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+
+
+    <div class="modal-content">
+
+      <!-- <app-loading [type]="'dialog'"></app-loading> -->
+
+      <div class="modal-header">
+        <h5 class="title">{{'Change language' | locale}}</h5>
+      </div>
+
+
+      <div class="modal-body">
+        <form #form="ngForm"  (ngSubmit)="change_language(form.value)" >
+
+          <div class="row neue-reg mt-3">
+
+            <div class="col-lg-6">
+
+                <div class="form-group">
+                    <label >{{'Language' | locale}}</label>
+                    <select class="form-control" [ngModel]="l" name="language">
+                      <option *ngFor="let lang of langs" [ngValue]="lang">{{lang.name | titlecase | locale}}</option>
+                    </select>
+
+
+                </div>
+
+            </div>
+
+              <div class="col-12">
+                  <div class="d-flex justify-content-end">
+                      <button type="submit" class="btn btn-outline-primary tajwal-regium px-5">{{'Change' | locale}}</button>
+                  </div>
+              </div>
+
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </div>
+</div>

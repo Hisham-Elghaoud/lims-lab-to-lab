@@ -1,0 +1,27 @@
+table.blueTable {
+  text-align: left;
+  overflow: hidden !important;
+
+}
+table.blueTable td, table.blueTable th {
+  border: 1px solid rgb(202, 202, 202);
+}
+table.blueTable tbody td {
+  font-size: 13px;
+  line-height: 1;
+}
+
+table.blueTable thead th {
+  font-weight: bold;
+}
+
+.head{
+   border-width: 0px !important;
+    outline: none;
+    font-size: 14pt !important;
+}
+
+h4
+{
+  color: #007bff;
+}

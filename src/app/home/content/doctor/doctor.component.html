@@ -1,0 +1,177 @@
+<ng-container *ngIf="this.router.url === '/doctors'">
+
+    <div class="row">
+      <div class="col">
+        <h2 class="roboto-300 start">{{'Doctor List' | locale}}</h2>
+      </div>
+    </div>
+
+    <div class="card mt-5 mb-5">
+      <div class="container-fluid py-3 px-4">
+
+
+
+        <div class="row mt-2">
+
+
+          <div class="col-12 col-lg-10 ">
+
+              <div class="form-group m-0 roboto-400"><input type="text"
+                name="key" id="pat_autocomplete" class="form-control "
+                [placeholder]="'Search by doctor name' | locale">
+
+
+
+              </div>
+
+          </div>
+
+          <div class="col-12 col-lg-2 mt-3 mt-lg-0">
+            <div class="d-flex w-100 justify-content-end ">
+              <button  data-toggle="modal" data-target="#modal" (click)="openModal({'type' : 'New'})"
+               type="button" id="add-button" class="btn btn-outline-primary w-100 roboto-400">{{'Add' | locale}} +</button>
+            </div>
+          </div>
+
+
+        </div>
+
+        <div class="row">
+
+          <div class="col-12">
+            <div class="table-responsive  ">
+              <table class="table mt-3">
+              <thead>
+                <tr class="neue-light roboto-400">
+                  <!-- <th  scope="col" > الرقم التسلسلي</th> -->
+                  <th width="50%" scope="col"> {{'id' | locale:2}}</th>
+                  <th width="50%" scope="col"> {{'Name' | locale}}</th>
+                  <th width="50%" scope="col"> {{'Phone' | locale}}</th>
+                  <th width="50%" scope="col"> {{'Specialty' | locale}}</th>
+                  <!-- <th scope="col"> Insurance ID</th>
+                  <th scope="col"> Birthdate</th>
+                  <th scope="col"> Paid</th>
+                  <th scope="col"> Remaining</th> -->
+                  <!-- <th scope="col">خيارات</th> -->
+                  <!-- <th scope="col"></th> -->
+                </tr>
+
+
+
+              </thead>
+
+              <tbody class="neue-light mt-2">
+                <ng-container *ngFor="let doctor of doctors;let i = index ">
+
+                   <tr  (click)="openModal({'type' : 'Edit' , 'id' : doctor.id,'name': doctor.name,'phone': doctor.phone,'specialty': doctor.specialty})" valign="middle"  class="clickable_row roboto-400">
+                    <!-- <td scope="row">{{voucher.serial_number}}</td> -->
+                    <td width="50%" >{{i + 1}}</td>
+                    <td width="50%">{{doctor.name || '✖' }}</td>
+                    <td width="50%">{{doctor.phone || '✖' }}</td>
+                    <td width="50%">{{doctor.specialty || '✖' }}</td>
+                    <!-- <td>{{doctor.insurance_id }}</td>
+                    <td>{{doctor.birthdate}}</td>
+                    <td>{{doctor.payment.paid}} LYD</td>
+                    <td>{{doctor.payment.total_summery - doctor.payment.paid }} LYD</td> -->
+
+                    <!-- <td class="flex-column "  ><a class="py-0" ><h5 class="neue-reg text-right">
+                      <i (click)="pay(order.id)" *ngIf="order.status == 'بانتظار الدفع'" class="fas fa-dollar-sign item"></i>
+                    </h5></a>
+                    </td> -->
+                    <!-- <td width="15%"><button [disabled]="!(order.order_state_id == 1 || order.order_state_id == 2) " (click)="cancelOrder(order.id)" class=" btn btn-outline-secondary " > الغاء الطلب</button></td> -->
+                  </tr>
+                </ng-container>
+
+
+
+              </tbody>
+              </table>
+            </div>
+          </div>
+
+
+
+        </div>
+
+
+      </div>
+    </div>
+
+  </ng-container>
+
+  <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+
+
+      <div class="modal-content">
+
+        <div class="modal-body">
+
+
+          <div class="container-fluid px-4 mt-3">
+            <div class="row">
+              <div class="col-12">
+                  <h5  class="roboto-500 start">{{(action.type + ' doctor') | locale}}</h5>
+              </div>
+            </div>
+          </div>
+          <form #patient_form="ngForm"   id="patient_form"  (ngSubmit)="onSubmit(patient_form)" >
+
+            <div class="row neue-reg mt-3">
+
+              <div  class="col-lg-12">
+
+                  <div class="form-group">
+                      <label for="exampleInputEmail1">{{'doctor Name' | locale}}</label>
+                      <input #name [(ngModel)]="action.name" required pattern="^([^0-9]*)$" maxlength="25" name="name"id="name"  type="text" class="form-control"   [placeholder]="'Doctor Name' | locale">
+                  </div>
+                  <div class="form-group">
+                      <label for="exampleInputEmail1">{{'Phone Number' | locale}}</label>
+                      <input #phone [(ngModel)]="action.phone"  maxlength="25" name="phone"id="phone"  type="text" class="form-control"   [placeholder]="'Phone number' | locale">
+                  </div>
+                  <div class="form-group">
+                      <label for="exampleInputEmail1">{{'Specialty' | locale}}</label>
+                      <input #specialty [(ngModel)]="action.specialty"  maxlength="25" name="specialty"id="specialty"  type="text" class="form-control"   [placeholder]="'Specialty' | locale">
+                  </div>
+
+              </div>
+            </div>
+            <div class="row neue-reg my-4">
+                <div class="col-12">
+                  <div class="d-flex justify-content-end">
+                    <div *ngIf="sureState" class="col h4">
+                      <p  class="text-danger m-0">{{'Are you sure you want to remove this doctor?' | locale}}
+                        <span (click)="remove(action.id)" class="mx-2 text-secondary clickable">{{'Yes' | locale}}</span><span (click)="sureState = false" class="ml-2 text-secondary clickable">{{'No' | locale}}</span>
+                      </p>
+                    </div>
+                    <ng-container *ngIf="!sureState">
+                      <button
+                        *ngIf="action.type == 'Edit'"
+                        type="button"
+                        (click)="sureState = true"
+                        class="btn btn-outline-danger tajwal-regium px-4 m-2"
+                      >
+                        {{'Delete' | locale}}
+                      </button>
+                      <button
+                        form="patient_form"
+                        type="submit"
+                        class="btn btn-outline-primary tajwal-regium px-4 m-2"
+                      >
+                        {{ (action.type == "Edit" ? "Save" : "Add") | locale}}
+                      </button>
+                    </ng-container>
+                  </div>
+
+                </div>
+              </div>
+
+          </form>
+
+
+
+
+        </div>
+      </div>
+    </div>
+  </div>

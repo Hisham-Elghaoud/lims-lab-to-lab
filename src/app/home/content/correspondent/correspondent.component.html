@@ -1,0 +1,67 @@
+
+
+<ng-container *ngIf="correspondent" >
+
+  <div class="row">
+    <div class="col">
+      <h2 class="roboto-300">{{correspondent.name}}</h2>
+    </div>
+  </div>
+
+  <div class="card mb-5 mt-5">
+    <div class="container-fluid py-3 px-4">
+
+
+<!--
+      <div class="row mt-2">
+
+        <div class="col-12 col-lg-2 mt-3 mt-lg-0">
+          <div class="d-flex w-100 justify-content-end ">
+            <button  data-toggle="modal" data-target="#cor-modal"
+             type="button" id="add-button" class="btn btn-outline-primary w-100 roboto-400" (click)="action = {'type' : 'New'}">Add +</button>
+          </div>
+        </div>
+
+      </div> -->
+
+      <div class="row">
+
+        <div class="col-12">
+          <P>Code: {{correspondent.code}}</P>
+          <P>Phone Number: {{correspondent.phone_number}}</P>
+
+        </div>
+
+      </div>
+
+
+    </div>
+  </div>
+
+</ng-container>
+
+<!-- <router-outlet></router-outlet> -->
+
+<!-- Modal -->
+<div class="modal fade" id="cor-modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+    <div class="modal-content">
+
+      <div class="modal-body">
+
+
+
+        <div class="container-fluid px-4 mt-3">
+          <div class="row">
+            <div class="col-12">
+                <h5  class="roboto-500">Create Correspondent</h5>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+

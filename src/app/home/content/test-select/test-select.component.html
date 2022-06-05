@@ -1,0 +1,83 @@
+
+
+
+
+
+
+    <div class="row mt-2">
+
+      <div class="col-12">
+        <div class="form-group m-0">
+          <div class="row">
+            <div class="col-md-10">
+              <input autocomplete="off" type="text" (blur)="hide()"  class="form-control" id="test_autocomplete"
+              [placeholder]="'Search by test | profile code' | locale"
+              (keyup.arrowdown)="shiftFocusDown()"
+              (keyup.arrowup)="shiftFocusUp()"
+              (keyup.enter)="enter()"
+              #searchInput
+              (keypress)="convertToEnglish($event,searchInput)">
+              >
+    
+              <button (click)="add_test_by_enter()" type="submit" style="display: none;"></button>
+            </div>
+            <div class="col-md-2">
+              <select
+                [(ngModel)]="filter_cat_id"
+                name="filter_cat_id"
+                id="cats"
+                class="custom-select"
+                (change)="changeCat()"
+              >
+                <option [value]="-1">{{ "Select a category" | locale }}</option>
+                <option *ngFor="let category of categories" [value]="category.id">
+                  {{ category.name }}
+                </option>
+              </select>
+            </div>
+          </div>
+          
+
+          <div id="dropdown" class="dropdown-menu test" style="width: 94%!important;left: 3%;right: 3%;max-height: 300px; top: 110px; overflow-y: scroll;">
+            <div class="table-responsive ">
+              <table class="table ">
+              <thead>
+                <tr class="neue-light ">
+                  <th width="15%" scope="col"> {{'Code' | locale}}</th>
+                  <th scope="col"> {{'Name' | locale}}</th>
+                  <!-- <th scope="col"> {{'Amount' | locale}}</th> -->
+                  <!-- <th scope="col"></th> -->
+                </tr>
+
+
+
+              </thead>
+              <br>
+
+              <tbody class="neue-light">
+                <ng-container *ngFor="let test of tests | async " >
+
+                   <tr valign="middle" (mousedown)="$event.preventDefault()" (click)="setTest(test)"  class="clickable_row allRow">
+                    <td>{{test.code}}</td>
+                    <td>{{test.name }}</td>
+                    <!-- <td>{{test.amount + data.info['currency']}} </td> -->
+
+                  </tr>
+                </ng-container>
+
+
+
+              </tbody>
+              </table>
+            </div>
+            <!-- <a *ngFor="let test of tests" class="dropdown-item" href="#">{{test.name}}</a>
+            <a *ngFor="let test of tests" class="dropdown-item" href="#">{{test.name}}</a> -->
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+
+

@@ -1,0 +1,408 @@
+<div class="container-fluid py-2 px-4">
+  <ng-container *ngIf="patient">
+    <form #form="ngForm" (ngSubmit)="onSubmit(form)">
+      <div class="row neue-reg mt-3">
+        <div class="col-lg-4">
+          <div class="form-group">
+            <label for="exampleInputEmail1">{{ "First Name" | locale }}</label>
+            <input
+              required
+              name="first_name"
+              [(ngModel)]="patient.first_name"
+              #name_input="ngModel"
+              type="text"
+              class="form-control"
+              [placeholder]="'First Name' | locale"
+            />
+
+            <small
+              style="display: block"
+              class="start"
+              *ngIf="
+                (name_input.errors ? name_input.errors['required'] : false) &&
+                (name_input.touched || form.submitted)
+              "
+            >
+              {{ "This field is required" | locale }}
+            </small>
+          </div>
+        </div>
+
+        <div class="col-lg-4">
+          <div class="form-group">
+            <label for="exampleInputEmail1">{{ "Middle Name" | locale }}</label>
+            <input
+              name="middle_name"
+              [(ngModel)]="patient.middle_name"
+              #middle_name_input="ngModel"
+              type="text"
+              class="form-control"
+              [placeholder]="'Middle Name' | locale"
+            />
+
+            <!--
+
+                  <small
+                  style="display: block;" class="start"
+                  *ngIf="
+                  (middle_name_input.errors?middle_name_input.errors['required']:false) && middle_name_input.touched ">
+                  {{'This field is required' | locale}}
+                </small> -->
+          </div>
+        </div>
+
+        <div class="col-lg-4">
+          <div class="form-group">
+            <label for="exampleInputEmail1">{{ "Last Name" | locale }}</label>
+            <input
+              required
+              [(ngModel)]="patient.last_name"
+              name="last_name"
+              type="text"
+              class="form-control"
+              [placeholder]="'Last Name' | locale"
+              #last_name_input="ngModel"
+            />
+
+            <small
+              style="display: block"
+              class="start"
+              *ngIf="
+                (last_name_input.errors
+                  ? last_name_input.errors['required']
+                  : false) && (last_name_input.touched || form.submitted)
+              "
+            >
+              {{ "This field is required" | locale }}
+            </small>
+          </div>
+        </div>
+      </div>
+
+      <div class="row neue-reg">
+        <div class="col-lg-4">
+          <ng-container *ngIf="genders.length != 0">
+            <div class="form-group">
+              <label>{{ "Gender" | locale }}</label>
+              <select
+                (change)="genderChanged($event.target)"
+                [(ngModel)]="patient.gender_id"
+                name="gender_id"
+                class="custom-select"
+              >
+                <option
+                  selected
+                  *ngFor="let gender of genders"
+                  [value]="gender.id"
+                >
+                  {{ gender.name | locale }}
+                </option>
+              </select>
+            </div>
+          </ng-container>
+        </div>
+
+        <div class="col-lg-4">
+          <div class="form-group">
+            <label for="civility">{{ "Civility" | locale }}</label>
+            <select
+              [(ngModel)]="patient.civility_id"
+              name="civility_id"
+              id="civility"
+              class="custom-select"
+            >
+              <option *ngFor="let civility of civilities" [value]="civility.id">
+                {{ civility.name }}
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <div class="col-4">
+          <div class="form-group">
+            <label for="patient_picker">{{ "Birthdate" | locale }}</label>
+            <input
+              [(ngModel)]="patient.birthdate"
+              autocomplete="off"
+              name="birthdate"
+              id="patient_picker"
+              class="flatpickr flatpickr-input active form-control"
+              type="text"
+              [placeholder]="'Select a Date' | locale"
+            />
+          </div>
+        </div>
+
+        <div class="form-group col-lg-4">
+          <label for="exampleInputEmail1">{{ "Age" | locale }}</label>
+          <div class="input-group">
+            <input
+              autocomplete="off"
+              pattern="^(0|[1-9][0-9]*)$"
+              max="120"
+              min="1"
+              aria-label="Text input with dropdown button"
+              [(ngModel)]="patient.age"
+              name="age"
+              type="number"
+              class="form-control"
+              [ngClass]="{ 'rad-left': data.isRTL, 'rad-right': !data.isRTL }"
+              [placeholder]="'Age' | locale"
+              #age_input="ngModel"
+            />
+            <div class="input-group-append">
+              <button
+                class="btn btn-outline-primary form-control rad-left"
+                [ngClass]="{ 'rad-left': !data.isRTL, 'rad-right': data.isRTL }"
+                data-toggle="dropdown"
+                aria-haspopup="true"
+                aria-expanded="false"
+                [innerHTML]="patient.age_type | locale"
+              ></button>
+              <div class="dropdown-menu">
+                <a
+                  *ngFor="let type of ageTypes"
+                  class="dropdown-item clickable start"
+                  (click)="changeAgeType(type, form)"
+                  >{{ type | locale }}</a
+                >
+              </div>
+            </div>
+          </div>
+          <small *ngIf="age_input.errors ? age_input.errors['pattern'] : false">
+            the age should not contain any letters
+          </small>
+        </div>
+
+        <div class="col-lg-4">
+          <div class="form-group">
+            <label for="exampleInputEmail1">{{ "Nationality" | locale }}</label>
+            <input
+              [(ngModel)]="patient.nationality"
+              name="nationality"
+              type="text"
+              class="form-control"
+              [placeholder]="'Nationality' | locale"
+              #nationality_input="ngModel"
+            />
+          </div>
+        </div>
+
+        <!-- <div class="col-lg-4">
+
+          <div class="form-group">
+
+          </div>
+
+      </div> -->
+
+        <!--
+          <div class="col-lg-2">
+
+              <div class="form-group">
+                  <label for="exampleInputEmail1">Year</label>
+                  <input required pattern="^([^0-9])$" maxlength="25"  [(ngModel)]="birth_year" name="birth_year" type="text" class="form-control"  placeholder="Birth year" #last_name_input="ngModel">
+
+                  <small *ngIf="
+                  (last_name_input.errors?last_name_input.errors['pattern']:false)
+                  && last_name_input.touched">
+                      الاسم يجب ألا يحتوي على أرقام
+                  </small>
+
+                  <small *ngIf="
+                  (last_name_input.errors?last_name_input.errors['required']:false)
+                  && last_name_input.touched">
+                  الاسم مطلوب
+                  </small>
+
+
+              </div>
+
+          </div>
+          <div class="col-lg-2">
+
+              <div class="form-group">
+                  <label for="exampleInputEmail1">Month</label>
+                  <input required pattern="^([^0-9]*)$" maxlength="25"  [(ngModel)]="birth_month" name="birth_month" type="text" class="form-control"  placeholder="Birth month" #last_name_input="ngModel">
+
+                  <small *ngIf="
+                  (last_name_input.errors?last_name_input.errors['pattern']:false)
+                  && last_name_input.touched">
+                      الاسم يجب ألا يحتوي على أرقام
+                  </small>
+
+                  <small *ngIf="
+                  (last_name_input.errors?last_name_input.errors['required']:false)
+                  && last_name_input.touched">
+                  الاسم مطلوب
+                  </small>
+
+
+              </div>
+
+          </div>
+
+          <div class="col-lg-2">
+
+              <div class="form-group">
+                  <label for="exampleInputEmail1">Day</label>
+                  <input required pattern="^(\d)*$" maxlength="25"  [(ngModel)]="birth_day" name="birth_day" type="text" class="form-control"  placeholder="Birth day" #birth_day_input="ngModel">
+
+                  <small *ngIf="
+                  (birth_day_input.errors?birth_day_input.errors['pattern']:false)
+                  && birth_day_input.touched">
+                     numbers only
+                  </small>
+
+                  <small *ngIf="
+                  (last_name_input.errors?last_name_input.errors['required']:false)
+                  && last_name_input.touched">
+                  الاسم مطلوب
+                  </small>
+
+
+              </div>
+
+          </div> -->
+
+        <!-- </div>
+
+      <div class="row neue-reg"> -->
+
+        <!-- <div class="col-lg-4">
+
+          <ng-container *ngIf="civilities.length != 0">
+
+          <div class="form-group ">
+            <label >{{'Gender' | locale}}</label>
+            <select (change)="genderChanged($event.target)" [(ngModel)]="patient.gender_id"   name="gender_id"  class="custom-select">
+                <option selected *ngFor="let gender of genders"  [value]="gender.id">{{gender.name | locale}}</option>
+            </select>
+          </div>
+
+            <div class="form-group ">
+              <label for="civility">Civility</label>
+              <select [(ngModel)]="patient.civility_id"  name="civility_id" id="civility" class="custom-select">
+                  <option *ngFor="let civility of civilities "   [value]="civility.id">{{civility.name}}</option>
+
+              </select>
+            </div>
+
+          </ng-container>
+
+
+        </div> -->
+
+        <div class="col-4">
+          <div class="form-group">
+            <label>{{ "Phone Number" | locale }}</label>
+            <input
+              pattern="[0-9]{0,14}"
+              title="bla bla "
+              maxlength="25"
+              name="phone_number"
+              [(ngModel)]="patient.phone_number"
+              #phone_input="ngModel"
+              type="text"
+              class="form-control"
+              [placeholder]="'Phone Number' | locale"
+            />
+
+            <!-- <small *ngIf="
+                  (phone_input.errors?phone_input.errors['pattern']:false)
+                  && phone_input.touched">
+                      the phone should not contain any letter
+
+                  </small> -->
+          </div>
+        </div>
+
+        <div class="col-4">
+          <div class="form-group">
+            <label for="exampleInputEmail1">{{
+              "Correspondent ID" | locale
+            }}</label>
+            <input
+              maxlength="25"
+              [(ngModel)]="patient.insurance_id"
+              [placeholder]="'Correspondent ID' | locale"
+              name="insurance_id"
+              type="text"
+              class="form-control"
+              #insurance_id_input="ngModel"
+            />
+          </div>
+        </div>
+
+        <div class="col-4">
+          <div class="form-group">
+            <label>{{ "Hospital ID" | locale }}</label>
+            <input
+              pattern="[0-9]{0,14}"
+              title="Hospital ID"
+              maxlength="25"
+              name="hospital_id"
+              [(ngModel)]="patient.hospital_id"
+              #phone_input="ngModel"
+              type="text"
+              class="form-control"
+              [placeholder]="'Hospital ID' | locale"
+            />
+
+            <!-- <small *ngIf="
+                (phone_input.errors?phone_input.errors['pattern']:false)
+                && phone_input.touched">
+                    the hospital id should not contain any letter
+
+                </small> -->
+          </div>
+        </div>
+
+        <div class="col-4">
+          <div class="form-group">
+            <label>{{ "National ID" | locale }}</label>
+            <input
+              pattern="[0-9]{0,14}"
+              title="National ID"
+              maxlength="12"
+              name="NID"
+              [(ngModel)]="patient.NID"
+              #NID_input="ngModel"
+              type="text"
+              class="form-control"
+              [placeholder]="'National ID' | locale"
+            />
+
+            <!-- <small *ngIf="
+                (phone_input.errors?phone_input.errors['pattern']:false)
+                && phone_input.touched">
+                    the hospital id should not contain any letter
+
+                </small> -->
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="isCreate" class="row neue-reg my-4">
+        <div class="col-12">
+          <div class="d-flex justify-content-end">
+            <button
+              *ngIf="action.type == 'New'"
+              type="submit"
+              class="btn btn-outline-primary tajwal-regium px-5"
+            >
+              {{ "Add" | locale }}
+            </button>
+            <button
+              *ngIf="action.type == 'Edit'"
+              type="submit"
+              class="btn btn-outline-primary tajwal-regium px-5"
+            >
+              {{ "Save" | locale }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </form>
+  </ng-container>
+</div>

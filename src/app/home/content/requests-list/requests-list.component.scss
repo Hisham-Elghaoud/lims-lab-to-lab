@@ -1,0 +1,55 @@
+.circle {
+width: 15px;
+}
+
+p{
+  font-size: 12px;
+  margin: 0px;
+  color: black;
+}
+
+.cur{
+  font-size: 10px;
+}
+
+.tag{
+  width: 250px;
+    height: 25px;
+    border-radius: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.red-tag{
+  background-color: #ffdada;
+}
+
+.green-tag{
+  background-color: #ebf1db;
+}
+.yellow-tag{
+  background-color: #fff9b1;
+}
+
+.btn-result{
+  font-size: 12px;
+}
+
+.role_link:hover {
+  color : #007bff;
+  cursor: pointer;
+}
+
+
+
+table,
+thead,
+tr,
+tbody,
+th,
+td {
+  justify-content: center!important;
+}
+
+

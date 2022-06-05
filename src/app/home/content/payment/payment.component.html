@@ -1,0 +1,283 @@
+
+  <div class="row">
+    <div class="col">
+      <h4 class="roboto-300 start">{{('Request ' + (!data.isDiscount? 'Payment' : 'Discount')) | locale}} #{{request?.reception_number}}</h4>
+    </div>
+  </div>
+
+<!-- <div class="card w-100 p-4 p-xl-5 my-5"> -->
+<div>
+
+
+  <div class="container-fluid">
+
+    <!-- <div *ngIf="!data.isDiscount" class="row mt-4">
+      <div class="col-12">
+          <h5  class="roboto-500 start">{{'Make Payment' | locale}}</h5>
+      </div>
+    </div> -->
+
+    <form [ngStyle]="data.isDiscount? {display: 'none'} : {}" #form="ngForm" (ngSubmit)="onSubmit(form)" >
+      <div class="row">
+        <div class="col-lg-6 mt-3">
+          <div class="form-group">
+
+
+            <label for="Amount">{{'Amount' | locale}}</label>
+            <input  maxlength="500" name="amount" required
+              [(ngModel)]="Amount" type="text" class="form-control" #percent_input="ngModel"
+              [placeholder]="'Amount' | locale"
+              [max]="transaction == 'patient'? price.patient_remaining:price.correspondent_remaining">
+
+              <small
+              style="display: block"
+              class="start"
+              *ngIf="
+                (percent_input.errors ? percent_input.errors['required'] : false) &&
+                (percent_input.touched || form.submitted)
+              "
+            >
+              {{ "This field is required" | locale }}
+            </small>
+
+          </div>
+        </div>
+
+        <div class="col-lg-6 mt-3 ">
+          <div class="form-group ">
+            <label for="civility">{{'Payment Method' | locale}}</label>
+            <select [(ngModel)]="payment_method_id"  name="payment_method_id" id="civility" class="custom-select neue-reg">
+              <option *ngFor="let paymentMethod of paymentMethods | async"  [value]="paymentMethod.id">{{paymentMethod.name}}</option>
+          </select>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="form-group ">
+            <label for="cachier_id">{{'Cashier' | locale}}</label>
+            <select [(ngModel)]="cashier_id"  name="cashier_id" id="cashier_id" class="custom-select neue-reg">
+              <option *ngFor="let cashier of cashiers | async"  [value]="cashier.id">{{cashier.name}}</option>
+          </select>
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="form-group ">
+            <label for="payer">{{'Payer' | locale}}</label>
+            <select (change)="transaction = $event.target.value" [ngModel]="'patient'"  name="payer" id="payer" class="custom-select neue-reg">
+              <option [value]="'patient'">{{'Patient' | locale}}</option>
+              <option [value]="'correspondent'" selected>{{'Correspondent' | locale}}</option>
+          </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-6">
+          <div class="form-group">
+            <label for="picker">{{'Payment Date' | locale}}</label>
+            <input [disabled]="!data.me?.isAdmin" name="payment_date" id="payment_picker" autocomplete="off" class="flatpickr flatpickr-input active form-control" type="text" [placeholder]="'Select a Date' | locale" >
+          </div>
+        </div>
+        <div class="col-3">
+          <div class="form-group">
+            <label for="picker">&nbsp;</label>
+            <button [disabled]="transaction == 'patient' && !price.patient_remaining || transaction == 'correspondent' && !price.correspondent_remaining " type="submit" class="btn btn-outline-primary tajwal-regium px-5 form-control">{{'Pay' | locale}} </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="row mt-4 mb-4">
+        <div class="col-12">
+          <div class="container-fluid">
+            <div class="row justify-content-between" >
+              <ng-container *ngIf="!isTax" >
+              <div style="display: flex;flex-direction: column; min-width: fit-content;color: darkslategrey!important;" *ngFor="let key of keys" class="roboto-500 col text-center">
+                <h5>{{key.label | locale}}</h5>
+                <h6>{{price[(key.direct? '' :transaction == 'patient'? 'patient_':'correspondent_') + key.value]}}{{data.info['currency']}}</h6>
+              </div>
+            </ng-container>
+            <ng-container *ngIf="isTax">
+              <div style="display: flex;flex-direction: column; min-width: fit-content;color: darkslategrey!important;" *ngFor="let key of keys2" class="roboto-500 col text-center">
+                <h5>{{key.label | locale}}</h5>
+                <h6>{{price[(key.direct? '' :transaction == 'patient'? 'patient_':'correspondent_') + key.value]}}{{data.info['currency']}}</h6>
+              </div>
+            </ng-container>
+            </div>
+          </div>
+            <!-- Total charged:  {{ transaction == 'patient'?price.patient_total:   price.correspondent_total}}LYD &nbsp;&nbsp;
+             Paid: {{transaction == 'patient'? price.patient_paid: price.correspondent_paid}}LYD &nbsp;&nbsp; {{ request?.discount?.data[0]?.amount? 'Discount: ' + request?.discount?.data[0]?.amount + (request.discount?.data[0]?.type == 'percentage'?'%':'LYD'): '' }} &nbsp;&nbsp;
+             Remaining:  {{transaction == 'patient'? price.patient_remaining:price.correspondent_remaining}}LYD -->
+        </div>
+      </div>
+
+      <hr class="mt-4">
+
+
+    </form>
+
+
+
+
+
+  <form *ngIf="data.isDiscount || true" #discountForm="ngForm" (ngSubmit)="setDiscount(discountForm)" >
+
+    <!-- <input type="hidden" name="type" ngModel="fixed"> -->
+
+    <div class="container-fluid">
+        <div [attr.data-toggle]="data.isDiscount? null: 'collapse'" data-target="#collapseOne" class="row mt-2 mb-4 clickable">
+          <div class="col-12 pl-0 py-2">
+              <h5 class="roboto-500 start" [ngClass]="{'dropdown-toggle': !data.isDiscount,'rtl':  data.isRTL }"> {{'Set Discount' | locale}}</h5>
+          </div>
+         </div>
+         <div id="collapseOne"  [ngClass]="{'collapse': !data.isDiscount }">
+          <div class="row">
+            <div class="col-12 start">
+              <div  class="btn-group btn-group-toggle mb-2" data-toggle="buttons">
+                <label class="btn btn-outline-primary active"
+                [ngClass]="{'rad-left': data.isRTL, 'rad-right': !data.isRTL}"
+                >
+                  <input (click)="toggle('p')" type="radio" name="options" [value]="'p'" [(ngModel)]="discountType" id="option1" > {{'Percent' | locale:2}}
+                </label>
+                <label class="btn btn-outline-primary"
+                [ngClass]="{'rad-left': !data.isRTL, 'rad-right': data.isRTL}"
+                >
+                  <input (click)="toggle('v')" type="radio" name="options" [value]="'v'" [(ngModel)]="discountType" id="option2"> {{'Value' | locale:2}}
+                </label>
+              </div>
+            </div>
+          </div>
+          <div class="row neue-reg mt-2">
+
+            <div *ngIf="discountType == 'p'? true : false" class="col-lg-6 ">
+                <div class="form-group">
+
+
+                  <!-- <label for="percent">Set Percentage</label> -->
+                  <input  maxlength="500" name="percent"
+                    [(ngModel)]="percent" type="number" class="form-control" #percent_input="ngModel"
+                    [placeholder]="'Discount percentage' | locale" min="0" max="100">
+
+
+                </div>
+
+            </div>
+
+
+
+
+            <div  *ngIf="discountType == 'v'? true : false" class="col-lg-6">
+
+              <div class="form-group">
+
+
+                <!-- <label for="value">Set Value to</label> -->
+                <input autocomplete="off"  maxlength="500" name="value"
+                  [(ngModel)]="value" type="number" class="form-control" #value_input="ngModel"
+                  [placeholder]="'Discount value' | locale" min="0" >
+
+
+              </div>
+
+            </div>
+
+          </div>
+          <div class="row mt-2">
+            <div class="col-6">
+              <div class="d-flex justify-content-start">
+                  <button type="submit" class="btn btn-outline-primary tajwal-regium px-5 start" >{{'Set Discount' | locale}} </button>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <hr class="mt-4">
+
+  </form>
+
+
+  <div *ngIf="!data.isDiscount" class="row mt-4 mb-4">
+    <div class="col-12">
+        <h5 class="roboto-500 start">{{'Transactions' | locale}} </h5>
+    </div>
+  </div>
+
+  <!-- <div class="row">
+    <div class="col-2  mt-3 mt-lg-0">
+      <div class="d-flex w-100 ">
+        <button  data-toggle="modal" data-target="#modal"
+         type="button" id="add-button" class="btn btn-outline-primary w-100 roboto-400">Add +</button>
+      </div>
+    </div>
+  </div> -->
+
+
+
+
+  <!-- <app-profile-select></app-profile-select> -->
+
+  <div *ngIf="!data.isDiscount" class="table-responsive mt-4">
+    <table class="table ">
+    <thead>
+      <tr class="neue-light ">
+        <!-- <th  scope="col" > الرقم التسلسلي</th> -->
+        <th style="width:50px" > {{"id" | locale}}</th>
+        <th scope="col">{{"Receptionist" | locale}}</th>
+        <th style="width:50px"> {{"Amount" | locale}}</th>
+        <th scope="col"> {{"Payer" | locale}}</th>
+        <th scope="col"> {{"Payment Method" | locale}}</th>
+        <th style="width: 150px;"> {{"Payment Date" | locale}}</th>
+        <th scope="col">{{ 'Cashier' | locale}}</th>
+        <th style="width: auto;" >{{"Remove" | locale}}</th>
+        <!-- <th scope="col">خيارات</th> -->
+        <!-- <th scope="col"></th> -->
+      </tr>
+    </thead>
+
+
+    <br>
+
+    <tbody class="neue-light">
+      <ng-container *ngFor="let payment of payments ">
+
+         <tr style="height: fit-content;" valign="middle" (mousedown)="$event.preventDefault()"   class="clickable_row ">
+          <!-- <td scope="row">{{voucher.serial_number}}</td> -->
+          <td>{{payment.id}}</td>
+          <td>{{payment.user?payment.user.first_name + ' ' + payment.user.last_name: 'UNKNOWN'}}</td>
+          <td>{{payment.amount}}</td>
+          <td>{{payment.payer }}</td>
+          <td>{{payment.payment_method }}</td>
+          <td>{{payment.payment_date | date }}</td>
+          <td>{{payment.cashier? payment.cashier.name : 'غير محدد' }}</td>
+          <td style="width: auto;" >
+            <!-- *ngIf=" user_id == payment.user?.id || user_role == 2" -->
+            <button
+              (click)="removeTransaction(payment)"
+              type="button"
+              class="btn btn-outline-danger"
+            >
+              <i class="fas fa-times"></i>
+            </button>
+          </td>
+          <!-- <td class="flex-column "  ><a class="py-0" ><h5 class="neue-reg text-right">
+            <i (click)="pay(order.id)" *ngIf="order.status == 'بانتظار الدفع'" class="fas fa-dollar-sign item"></i>
+          </h5></a>
+          </td> -->
+          <!-- <td width="15%"><button [disabled]="!(order.order_state_id == 1 || order.order_state_id == 2) " (click)="cancelOrder(order.id)" class=" btn btn-outline-secondary " > الغاء الطلب</button></td> -->
+        </tr>
+      </ng-container>
+
+
+
+    </tbody>
+    </table>
+  </div>
+
+  </div>
+
+
+
+
+
+</div>
+
+

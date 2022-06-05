@@ -1,0 +1,245 @@
+<ng-container>
+  <div class="row">
+    <div class="col">
+      <h2 class="roboto-300 start">{{'Tests | Profiles' | locale}}</h2>
+    </div>
+    <!-- <div class="col">
+     <app-expiration-date></app-expiration-date>
+    </div> -->
+    <!-- <div class="col-4"> -->
+    <!-- </div> -->
+  </div>
+
+  <div class="card mb-5 mt-5">
+    <div class="container-fluid py-3 px-4">
+      <div class="row mt-2">
+        <div class="col">
+          <div class="form-group m-0 roboto-400">
+            <input
+              type="text"
+              class="form-control px-5"
+              id="test_autocomplete"
+              [placeholder]="'Search by test | profile code or name' | locale"
+            />
+
+            <i [hidden]="!isLoaderHidden" class="fas search-icon fa-search"></i>
+
+            <div
+              [hidden]="isLoaderHidden"
+              #loader
+              class="spinner-border text-primary load"
+              role="status"
+            >
+              <span class="sr-only">Loading...</span>
+            </div>
+          </div>
+        </div>
+
+        <button
+          class="btn btn-outline-primary col-2"
+          data-target="#calc_modal"
+          data-toggle="modal"
+        >
+          {{'Total price calculation' | locale}}
+        </button>
+      </div>
+
+      <div class="row">
+        <div class="col-12">
+          <div class="table-responsive">
+            <table class="table mt-3">
+              <thead>
+                <tr class="neue-light roboto-400">
+                  <!-- <th  scope="col" > الرقم التسلسلي</th> -->
+                  <th width="25%" scope="col">{{'code' | locale}}</th>
+                  <th width="25%" scope="col">{{'Name' | locale}}</th>
+                  <th width="25%" scope="col">{{'Type' | locale}}</th>
+                  <!-- <th scope="col" >pricing </th> -->
+                  <th width="25%" scope="col">
+                    <select
+                      name="type_id"
+                      id="type_id"
+                      [(ngModel)]="pricing_id"
+                      class="custom-select"
+                      (change)="onChange($event.target.value)"
+                    >
+                      <option *ngFor="let price of pricings" [value]="price.id">
+                        <!-- <option selected > -->
+                        {{ price.name }}
+                      </option>
+                    </select>
+                  </th>
+                </tr>
+              </thead>
+              <br />
+
+              <tbody class="neue-light mt-2">
+                <ng-container *ngFor="let test of tests">
+                  <tr
+                    (click)="
+                      openModal({
+                        type: 'Edit',
+                        id: test.id,
+                        isProfile: test.isProfile
+                      })
+                    "
+                    valign="middle"
+                    class="clickable_row roboto-400"
+                  >
+                    <!-- <td scope="row">{{voucher.serial_number}}</td> -->
+                    <td width="25%">{{ test.code }}</td>
+                    <td width="25%">{{ test.name }}</td>
+                    <td width="25%">{{ (test.isPackage ? "Package" : test.isProfile? "Profile" : "Test") | locale:2 }}</td>
+
+                    <td width="25%">{{ test.amount + data.info['currency']}}</td>
+                    <!-- <td class="col-2"></td> -->
+
+                    <!-- <td class="flex-column "  ><a class="py-0" ><h5 class="neue-reg text-right">
+                    <i (click)="pay(order.id)" *ngIf="order.status == 'بانتظار الدفع'" class="fas fa-dollar-sign item"></i>
+                  </h5></a>
+                  </td> -->
+                    <!-- <td width="15%"><button [disabled]="!(order.order_state_id == 1 || order.order_state_id == 2) " (click)="cancelOrder(order.id)" class=" btn btn-outline-secondary " > الغاء الطلب</button></td> -->
+                  </tr>
+                </ng-container>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>
+
+<!-- <router-outlet></router-outlet> -->
+
+<div
+  class="modal fade"
+  id="calc_modal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="exampleModalCenterTitle"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-lg " role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5>{{'Total price calculation' | locale}}</h5>
+      </div>
+
+      <div class="modal-body">
+        <div class="row justify-content-center">
+          <div class="col-4 mx-2">
+            <h4>{{'Total' | locale}}: {{total || 0}}</h4>
+          </div>
+
+          <select
+          style="display: inline-block;"
+          name="type_id"
+          id="type_id"
+          [(ngModel)]="pricing_id"
+          class="custom-select col-4 mx-2"
+          (change)="onChange($event.target.value)"
+        >
+          <option *ngFor="let price of pricings" [value]="price.id">
+            <!-- <option selected > -->
+            {{ price.name }}
+          </option>
+        </select>
+
+        </div>
+
+        <!-- <div class="btn-group btn-group-toggle mb-2" data-toggle="buttons">
+          <label class="btn btn-outline-primary active">
+            <input
+              (click)="toggle('t')"
+              type="radio"
+              name="options"
+              [value]="'t'"
+              [(ngModel)]="searchType"
+              id="option1"
+            />
+            Tests
+          </label>
+          <label class="btn btn-outline-primary">
+            <input
+              (click)="toggle('p')"
+              type="radio"
+              name="options"
+              [value]="'p'"
+              [(ngModel)]="searchType"
+              id="option2"
+            />
+            Profiles
+          </label>
+        </div> -->
+
+        <app-item-select
+          *ngIf="tests.length"
+          [is_paginated]="false"
+          title="tests"
+          (setSelectedItem)="setSelectedTest($event)"
+          [array]="tests"
+        ></app-item-select>
+        <!-- <app-profile-select
+          [requestId]="request_id"
+          (setSelectedProfile)="setSelectedProfile($event)"
+          [hidden]="searchType == 't' ? true : false"
+        ></app-profile-select> -->
+
+        <div class="table-responsive mt-2">
+          <table class="table">
+            <thead>
+              <tr class="neue-light">
+                <!-- <th  scope="col" > الرقم التسلسلي</th> -->
+                <th width="15%" scope="col">{{'Code' | locale}}</th>
+                <th scope="col">{{'Name' | locale}}</th>
+                <th scope="col">{{'Price' | locale}}</th>
+                <th scope="col">{{'Remove' | locale}}</th>
+
+                <!-- <th scope="col"> Birthdate</th> -->
+                <!-- <th scope="col">خيارات</th> -->
+                <!-- <th scope="col"></th> -->
+              </tr>
+            </thead>
+
+            <tbody class="neue-light">
+              <ng-container *ngFor="let test of selectedTests;let i = index">
+                <tr
+                  valign="middle"
+                  (mousedown)="$event.preventDefault()"
+                  class="clickable_row"
+                >
+                  <!-- <td scope="row">{{voucher.serial_number}}</td> -->
+                  <td>{{ test.code }}</td>
+                  <td>{{ test.name }}</td>
+
+                  <td>{{ test.amount + data.info['currency']}}</td>
+                  <td>
+                    <button
+                      (click)="removetest(i)"
+                      type="button"
+                      class="btn btn-outline-danger"
+                    >
+                      <i class="fas fa-times"></i>
+                    </button>
+                  </td>
+
+                  <!-- <td>{{patient.birthdate | date}}</td> -->
+                  <!-- <td class="flex-column "  ><a class="py-0" ><h5 class="neue-reg text-right">
+                    <i (click)="pay(order.id)" *ngIf="order.status == 'بانتظار الدفع'" class="fas fa-dollar-sign item"></i>
+                  </h5></a>
+                  </td> -->
+                  <!-- <td width="15%"><button [disabled]="!(order.order_state_id == 1 || order.order_state_id == 2) " (click)="cancelOrder(order.id)" class=" btn btn-outline-secondary " > الغاء الطلب</button></td> -->
+                </tr>
+              </ng-container>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <!-- <button class="btn btn-primary col-2">Print</button> -->
+      </div>
+    </div>
+  </div>
+</div>

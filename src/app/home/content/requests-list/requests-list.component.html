@@ -1,0 +1,624 @@
+<ng-container>
+  <!-- <div *ngIf="username" class="container my-2">
+    <div class="row justify-content-center">
+      <div class="card">
+        <div class="card-body py-2">
+          <h6 class="card-title m-0">
+            <span class="mx-2">{{ username | titlecase }}</span>
+          </h6>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div *ngIf="roles.length > 1" class="container">
+    <div class="row justify-content-center">
+      <div class="card">
+        <div class="card-body py-2">
+          <h6 class="card-title m-0">
+            <span
+              (click)="navigate(role.name)"
+              [ngStyle]="current_role == role.name ? { color: '#007bff' } : {}"
+              class="mx-2"
+              [ngClass]="{ role_link: current_role != role.name }"
+              *ngFor="let role of roles"
+              >{{ role.name | titlecase | locale: 2 }}</span
+            >
+          </h6>
+        </div>
+      </div>
+    </div>
+  </div> -->
+
+  <div class="row">
+    <div class="col">
+      <h2 style="text-align: start" class="roboto-300">
+        {{ "Home" | locale }}
+      </h2>
+    </div>
+  </div>
+
+  <app-stat></app-stat>
+
+  <div class="row">
+    <div class="col-md-{{ col }}">
+      <div class="card mt-4 mb-5">
+        <div class="container-fluid py-3 px-4">
+          <div class="row mt-2">
+            <div class="form-group col-12 col-lg-4">
+              <input
+                id="fromPicker"
+                [(ngModel)]="from"
+                class="flatpickr flatpickr-input active form-control"
+                type="date"
+                [placeholder]="'Date from' | locale"
+                (change)="getRequests(1)"
+                autocomplete="off"
+              />
+            </div>
+            <div class="form-group col-12 col-lg-4">
+              <input
+                id="toPicker"
+                [(ngModel)]="to"
+                class="flatpickr flatpickr-input active form-control"
+                type="date"
+                [placeholder]="'Date to' | locale"
+                (change)="getRequests(1)"
+                autocomplete="off"
+              />
+            </div>
+            <!-- <div class="col-12 col-lg-3 ">
+
+              <div class="form-group m-0 roboto-400">
+
+                <input type="text" [(ngModel)]="hospital_id" class="form-control px-5" id="hospital_id"
+                (change)="getRequests(1)" [placeholder]="'Hospital ID' | locale">
+
+                <i [hidden]="!isLoaderHidden" class="fas search-icon fa-search"></i>
+
+                <div [hidden]="isLoaderHidden" #loader class="spinner-border text-primary load" role="status">
+                  <span class="sr-only ">Loading...</span>
+                </div>
+
+              </div>
+
+            </div> -->
+            <div class="col-lg-4 mt-3 mt-lg-0">
+              <div class="form-group">
+                <select
+                  [(ngModel)]="correspondent"
+                  placeholder="Date to"
+                  (change)="search()"
+                  name="correspondent"
+                  id="civility"
+                  class="custom-select"
+                >
+                  <option [value]="''">
+                    {{ "All correspondents" | locale }}
+                  </option>
+                  <option
+                    *ngFor="let corresponden of correspondents"
+                    [value]="corresponden.id"
+                  >
+                    {{ corresponden.name }}
+                  </option>
+                </select>
+              </div>
+            </div>
+
+            <div class="col-lg-2 mt-2 mt-lg-0">
+              <div class="form-group">
+                <select
+                  [(ngModel)]="payment_status"
+                  (change)="search()"
+                  name="payment_status"
+                  id="civility"
+                  class="custom-select"
+                >
+                  <option [value]="''">{{ "All" | locale }}</option>
+                  <option
+                    *ngFor="let payment_status of payment_statuses"
+                    [value]="payment_status"
+                  >
+                    {{ payment_status | locale }}
+                  </option>
+                </select>
+              </div>
+            </div>
+
+            <div class="col-lg-3 col-12">
+              <div class="form-group m-0 roboto-400">
+                <input
+                  type="text"
+                  class="form-control"
+                  [(ngModel)]="reception_num"
+                  name="reception_num"
+                  id="request_num_autocomplete"
+                  [placeholder]="'Search by Request #' | locale"
+                  (change)="search()"
+                />
+              </div>
+            </div>
+
+            <div class="col-12 col-lg-5">
+              <div class="form-group m-0 roboto-400">
+                <div class="input-group">
+                  <!-- <div class="input-group-prepend">
+                <span>
+                </span>
+              </div> -->
+                  <div class="input-group-prepend">
+                    <button
+                      class="btn btn-outline-primary form-control"
+                      [ngClass]="{
+                        'rad-left': data.isRTL,
+                        'rad-right': !data.isRTL
+                      }"
+                      data-toggle="dropdown"
+                      aria-haspopup="true"
+                      aria-expanded="false"
+                      [innerHTML]="
+                        (type == 'hospital_id'
+                          ? 'Hospital ID'
+                          : (type | titlecase)
+                        ) | locale
+                      "
+                    ></button>
+                    <div class="dropdown-menu">
+                      <a
+                        *ngFor="
+                          let key of [
+                            'name',
+                            'phone',
+                            'hospital_id',
+                            'barcode',
+                            'NID',
+                            'birthdate'
+                          ]
+                        "
+                        class="dropdown-item clickable"
+                        (click)="
+                          type = key; patient_search = ''; getRequests(1)
+                        "
+                        style="text-align: start"
+                        >{{
+                          (key == "hospital_id"
+                            ? "Hospital ID" :
+                            key == 'NID'? key
+                            : (key | titlecase)
+                          ) | locale
+                        }}</a
+                      >
+                    </div>
+                  </div>
+                  <input
+                    *ngIf="type != 'birthdate'"
+                    type="text"
+                    class="form-control"
+                    [ngClass]="{
+                      'rad-left': !data.isRTL,
+                      'rad-right': data.isRTL
+                    }"
+                    [(ngModel)]="patient_search"
+                    (keydown)="getRequests(1)"
+                    [placeholder]="'Patient search' | locale"
+                  />
+
+                  <input
+                    [ngStyle]="type == 'birthdate' ? {} : { display: 'none' }"
+                    id="birthdatePicker"
+                    [(ngModel)]="patient_search"
+                    class="flatpickr flatpickr-input active form-control"
+                    [ngClass]="{
+                      'rad-left': !data.isRTL,
+                      'rad-right': data.isRTL
+                    }"
+                    type="date"
+                    [placeholder]="'Birthdate' | locale"
+                    (change)="getRequests(1)"
+                    autocomplete="off"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- <div class="col-12 col-lg-3 mt-3 mt-lg-0">
+              <div class="d-flex w-100 justify-content-end ">
+                <button data-toggle="modal" data-target="#modal" type="button" id="add-button"
+                  class="btn btn-primary w-100 roboto-400">Add +</button>
+              </div>
+            </div> -->
+
+            <div class="col-12 col-lg-2 mt-3 mt-lg-0">
+              <div class="d-flex w-100 justify-content-end">
+                <button
+                  (click)="router.navigateByUrl('requests/add')"
+                  type="button"
+                  id="add-button"
+                  class="btn btn-primary w-100 roboto-400"
+                >
+                  {{ "Add" | locale }} +
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-12">
+              <div class="table-responsive">
+                <table style="width: 100%">
+                  <thead>
+                    <tr class="neue-light roboto-400">
+                      <!-- <th  scope="col" > الرقم التسلسلي</th> -->
+                      <th style="width: 150px" scope="col">
+                        {{ "Request #" | locale }}
+                      </th>
+                      <th style="width: 200px" scope="col">
+                        {{ "Patient name" | locale }}
+                      </th>
+                      <th style="width: 150px" scope="col">
+                        {{ "Correspondent" | locale }}
+                      </th>
+                      <th style="width: 150px" scope="col">
+                        {{ "Date" | locale }}
+                      </th>
+                      <!-- <th scope="col"> Clinical Info</th> -->
+                      <th style="width: 70px" scope="col">
+                        {{ "Result" | locale }}
+                      </th>
+                      <!-- <th style="width: 70px;" scope="col"> Total</th> -->
+                      <th style="width: 100px" scope="col">
+                        {{ "Status" | locale }}
+                      </th>
+                      <th style="width: 30px; min-width: 75px" scope="col">
+                        {{ "Payments" | locale }}
+                      </th>
+                      <th style="width: 30px; min-width: 75px" scope="col">
+                        {{ "Summary" | locale }}
+                      </th>
+                      <th style="width: 30px; min-width: 75px" scope="col">
+                        {{ "Draw" | locale }}
+                      </th>
+                      <th style="width: 50px; min-width: 75px" scope="col">
+                        {{ "Urgency" | locale }}
+                      </th>
+                      <th style="width: 50px; min-width: 75px" scope="col">
+                        {{ "Repeat" | locale }}
+                      </th>
+                      <th style="width: 30px; min-width: 75px" scope="col">
+                        {{ "Delivered" | locale }}
+                      </th>
+
+                      <!-- <th scope="col">خيارات</th> -->
+                      <!-- <th scope="col"></th> -->
+                    </tr>
+                  </thead>
+                  <tbody class="neue-light">
+                    <ng-container
+                      *ngFor="
+                        let request of requests
+                          | async
+                          | paginate
+                            : {
+                                id: 'pagination',
+                                itemsPerPage: pagination.per_page,
+                                currentPage: pagination.current_page,
+                                totalItems: pagination.total
+                              }
+                      "
+                    >
+                      <tr
+                        valign="middle"
+                        (click)="editRequest($event, request)"
+                        class="clickable_row roboto-400"
+                        [ngClass]="{
+                          urgent: request.urgent_flag,
+                          is_repeat: request.is_repeat
+                        }"
+                      >
+                        <!-- <td scope="row">{{voucher.serial_number}}</td> -->
+                        <td style="width: 150px">
+                          {{ request.reception_number }}
+                        </td>
+                        <td style="width: 200px">{{ request.patient }}</td>
+                        <td style="width: 150px">
+                          {{
+                            request.correspondent
+                              ? request.correspondent.name
+                              : ("None" | locale)
+                          }}
+                        </td>
+                        <td style="width: 150px">
+                          {{ request.created_at | date }}
+                        </td>
+                        <!-- <td>{{request.clinical_information }}</td> -->
+                        <td style="width: 70px">
+                          <div
+                            class="tag"
+                            [ngClass]="{
+                              'red-tag': !(
+                                request.status == 'technically validated'
+                              ),
+                              'green-tag':
+                                request.status == 'technically validated'
+                            }"
+                          >
+                            <p class="roboto-300">
+                              {{ request.status | result_status | locale }}
+                            </p>
+                          </div>
+
+                          <!-- <button
+                        *ngIf=" (request.status != 'active' && request.status != null)"
+                         type="submit" class="btn btn-outline-success roboto-400 py-1 btn-result">Show Result
+                        </button>
+
+
+                        <button
+                        *ngIf=" (request.status == 'active')"
+                         type="submit" disabled class="btn btn-outline-danger roboto-400 py-1 btn-result"> Not ready
+                        </button> -->
+                        </td>
+                        <!-- <td style="width: 70px;">{{request.total }} <span class="roboto-400 cur"> &nbsp; LYD</span></td> -->
+                        <td style="width: 100px">
+                          <div
+                            class="tag"
+                            [ngClass]="{
+                              'alert-warning':
+                                request.payment_check == 'partially-paid',
+                              'alert-success': request.payment_check == 'paid'
+                            }"
+                          >
+                            <span class="roboto-400 text-capitalize">
+                              {{
+                                (request.correspondent?.isLTA
+                                  ? "LTA"
+                                  : request.payment_status
+                                ) | locale
+                              }}
+                              <!-- {{(request.correspondent?.isLTA? 'LTA' : request.payment_status) | titlecase }} -->
+                            </span>
+                          </div>
+                        </td>
+                        <td style="width: 30px; min-width: 70px">
+                          <div
+                            placement="top"
+                            [ngbTooltip]="
+                              request.isClinic
+                                ? ('Charged to clinic' | locale)
+                                : null
+                            "
+                          >
+                            <button
+                              (click)="
+                                $event.stopPropagation();
+                                request.isClinic
+                                  ? snack.warning(
+                                      'This request is charged to clinic'
+                                    )
+                                  : openPayment(request.id, request.patient_id)
+                              "
+                              type="button"
+                              class="btn btn-outline-info p-0 px-3"
+                              [ngClass]="{
+                                'btn-outline-warning': request.isClinic
+                              }"
+                            >
+                              <i class="fas fa-dollar-sign"></i>
+                            </button>
+                          </div>
+                        </td>
+                        <td style="width: 30px; min-width: 70px">
+                          <button
+                            (click)="
+                              $event.stopPropagation();
+                              openSummary(request.id, request.patient_id)
+                            "
+                            type="button"
+                            class="btn btn-outline-info p-0 px-3"
+                          >
+                            <i class="far fa-clipboard"></i>
+                          </button>
+                        </td>
+                        <td style="width: 30px; min-width: 70px">
+                          <button
+                            (click)="
+                              $event.stopPropagation();
+                              openRequesrDraw(request.id)
+                            "
+                            type="button"
+                            class="btn btn-outline-info p-0 px-3"
+                          >
+                            <i class="fas fa-eye-dropper"></i>
+                          </button>
+                        </td>
+
+                        <td style="width: 50px; min-width: 75px">
+                          <div
+                            class="tag"
+                            [ngClass]="{
+                              'red-tag': request.urgent_flag,
+                              'green-tag': !request.urgent_flag
+                            }"
+                          >
+                            <p class="roboto-300">
+                              {{ request.urgent_flag | urgent | locale }}
+                            </p>
+                          </div>
+                        </td>
+                        <td style="width: 50px; min-width: 75px">
+                          <div
+                            class="tag"
+                            [ngClass]="{
+                              'blue-tag': request.is_repeat,
+                              'green-tag': !request.is_repeat
+                            }"
+                          >
+                            <p class="roboto-300">
+                              {{
+                                request.is_repeat
+                                  ? ("Repeat" | locale: 2)
+                                  : ("New" | locale)
+                              }}
+                            </p>
+                          </div>
+                        </td>
+                        <td style="width: 30px; min-width: 75px">
+                          <div class="d-flex justify-content-end w-100">
+                            <button
+                              type="button"
+                              (click)="setDelivered(request)"
+                              class="btn mx-auto btn{{
+                                request.delivery_flag == 0 ? '-outline' : ''
+                              }}-success p-0 px-3"
+                              [disabled]="request['delivery_flag'] == 1"
+                            >
+                              <i class="fas fa-check"></i>
+                            </button>
+                          </div>
+                        </td>
+                        <!-- <td class="flex-column "  ><a class="py-0" ><h5 class="neue-reg text-right">
+                        <i (click)="pay(order.id)" *ngIf="order.status == 'بانتظار الدفع'" class="fas fa-dollar-sign item"></i>
+                      </h5></a>
+                      </td> -->
+                        <!-- <td width="15%"><button [disabled]="!(order.order_state_id == 1 || order.order_state_id == 2) " (click)="cancelOrder(order.id)" class=" btn btn-outline-secondary " > الغاء الطلب</button></td> -->
+                      </tr>
+                    </ng-container>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="col-12 mt-3">
+              <div class="w-100 d-flex justify-content-center neue-med p-0">
+                <pagination-controls
+                  pagination-templates
+                  responsive="true"
+                  [previousLabel]="'Previous' | locale"
+                  [nextLabel]="'Next' | locale"
+                  (pageChange)="getRequests($event)"
+                  id="pagination"
+                ></pagination-controls>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4" *ngIf="col == 8">
+      <div class="card mt-4 mb-5">
+        <div class="container-fluid py-3 px-4">
+          <div class="row">
+            <div class="col-12">
+              <div class="table-responsive">
+                <table style="width: 100%">
+                  <thead>
+                    <tr class="neue-light roboto-400">
+                      <!-- <th  scope="col" > الرقم التسلسلي</th> -->
+                      <th style="width: 50px" scope="col">
+                        {{ "Code" | locale }}
+                      </th>
+                      <th style="width: 100px" scope="col">
+                        {{ "Name" | locale }}
+                      </th>
+                      <th style="width: 200px" scope="col">
+                        {{ "Inactive Note" | locale }}
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody class="neue-light">
+                    <ng-container *ngFor="let inactive_test of inactive_tests">
+                      <tr
+                        valign="middle"
+                        class="clickable_row roboto-400 urgent"
+                      >
+                        <!-- <td scope="row">{{voucher.serial_number}}</td> -->
+                        <td style="width: 50px">{{ inactive_test.code }}</td>
+                        <td style="width: 100px">{{ inactive_test.name }}</td>
+                        <td style="width: 200px">
+                          {{ inactive_test.inactive_note }}
+                        </td>
+                      </tr>
+                    </ng-container>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>
+
+<!-- <router-outlet></router-outlet> -->
+
+<!-- Modal -->
+<!-- <div class="modal fade" id="modal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+  aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+    <div class="modal-content">
+
+      <div class="modal-body">
+
+
+        <div class="container-fluid px-4">
+          <div class="row mt-4">
+            <div class="col-12">
+              <h5 class="roboto-500">Select a patient</h5>
+            </div>
+          </div>
+        </div>
+
+        <app-patient-select></app-patient-select>
+
+
+        <div class="container-fluid px-4 mt-3">
+          <div class="row">
+            <div class="col-12">
+              <h5 class="roboto-500">or create new</h5>
+            </div>
+          </div>
+        </div>
+
+
+        <app-new-patient (patientCreated)="onPatientCreated($event)" [action]="{'type' : 'New' }"></app-new-patient>
+      </div>
+    </div>
+  </div>
+</div> -->
+
+<div
+  class="modal fade"
+  id="summery_modal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="exampleModalCenterTitle"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="container-fluid px-4">
+          <ng-container *ngIf="summery_patientId && summery_request_id">
+            <app-request-summary
+              [patientId]="summery_patientId"
+              [request_id]="summery_request_id"
+            >
+            </app-request-summary>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="DrawSample">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content modal-content-demo">
+      <div class="modal-header">
+        <h6 class="modal-title">{{ "Draw Sample" | locale }}</h6>
+      </div>
+      <app-draw-sample [req_id]="req_id"></app-draw-sample>
+    </div>
+  </div>
+</div>

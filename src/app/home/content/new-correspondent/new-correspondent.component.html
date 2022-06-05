@@ -1,0 +1,203 @@
+<div class="container-fluid py-2 px-4">
+
+
+  <ng-container *ngIf="correspondent">
+
+    <form #form="ngForm"  (ngSubmit)="onSubmit(form)" >
+
+      <div class="row neue-reg mt-3">
+
+        <div class="col-lg-6">
+
+
+          <div class="form-group">
+            <label for="exampleInputEmail1">Code</label>
+            <input required  maxlength="25" name="code" [(ngModel)]="correspondent.code" #code_input="ngModel" type="text" class="form-control"   placeholder="Enter Code">
+
+
+                <small *ngIf="
+                (code_input.errors?code_input.errors['required']:false)
+                && code_input.touched">
+                    the code is required
+                </small>
+
+
+         </div>
+
+        </div>
+
+        <div class="col-lg-6">
+
+          <div class="form-group">
+            <label for="exampleInputEmail1"> Name</label>
+            <input required  maxlength="25"  [(ngModel)]="correspondent.name" name="name" type="text" class="form-control"  placeholder="Enter Name" #name_input="ngModel">
+
+
+
+            <small *ngIf="
+            (name_input.errors?name_input.errors['required']:false)
+            && name_input.touched">
+            the name is required
+          </small>
+
+
+        </div>
+
+        </div>
+
+      </div>
+
+      <div class="row neue-reg">
+
+          <div class="col-lg-6">
+
+            <ng-container *ngIf="pricing.length != 0">
+
+              <div class="form-group ">
+                <label for="pricing">Pricing</label>
+                <select [ngModel]="correspondent.pricing_id || pricing[0].id"  name="pricing_id" id="pricing" class="custom-select">
+                    <option *ngFor="let SinglerPricing of pricing "   [value]="SinglerPricing.id">{{SinglerPricing.name}}</option>
+
+                </select>
+              </div>
+
+            </ng-container>
+
+
+          </div>
+
+          <div class="col-lg-6">
+            <div class="form-group">
+              <label  for="exampleInputEmail1">Phone Number</label>
+              <input #phone_input="ngModel" pattern="^(09)(\d){8}$" [(ngModel)]="correspondent.phone_number" name="phone_number" type="text" class="form-control "  placeholder="  Enter Phone Number ">
+
+              <small *ngIf="
+              (phone_input.errors?phone_input.errors['pattern']:false)
+              && phone_input.touched">
+              رقم الهاتف يجب ان يكون بصيغة 09
+              </small>
+
+
+            </div>
+          </div>
+
+
+  <!--
+          <div class="col-lg-2">
+
+              <div class="form-group">
+                  <label for="exampleInputEmail1">Year</label>
+                  <input required pattern="^([^0-9])$" maxlength="25"  [(ngModel)]="birth_year" name="birth_year" type="text" class="form-control"  placeholder="Birth year" #last_name_input="ngModel">
+
+                  <small *ngIf="
+                  (last_name_input.errors?last_name_input.errors['pattern']:false)
+                  && last_name_input.touched">
+                      الاسم يجب ألا يحتوي على أرقام
+                  </small>
+
+                  <small *ngIf="
+                  (last_name_input.errors?last_name_input.errors['required']:false)
+                  && last_name_input.touched">
+                  الاسم مطلوب
+                  </small>
+
+
+              </div>
+
+          </div>
+          <div class="col-lg-2">
+
+              <div class="form-group">
+                  <label for="exampleInputEmail1">Month</label>
+                  <input required pattern="^([^0-9]*)$" maxlength="25"  [(ngModel)]="birth_month" name="birth_month" type="text" class="form-control"  placeholder="Birth month" #last_name_input="ngModel">
+
+                  <small *ngIf="
+                  (last_name_input.errors?last_name_input.errors['pattern']:false)
+                  && last_name_input.touched">
+                      الاسم يجب ألا يحتوي على أرقام
+                  </small>
+
+                  <small *ngIf="
+                  (last_name_input.errors?last_name_input.errors['required']:false)
+                  && last_name_input.touched">
+                  الاسم مطلوب
+                  </small>
+
+
+              </div>
+
+          </div>
+
+          <div class="col-lg-2">
+
+              <div class="form-group">
+                  <label for="exampleInputEmail1">Day</label>
+                  <input required pattern="^(\d)*$" maxlength="25"  [(ngModel)]="birth_day" name="birth_day" type="text" class="form-control"  placeholder="Birth day" #birth_day_input="ngModel">
+
+                  <small *ngIf="
+                  (birth_day_input.errors?birth_day_input.errors['pattern']:false)
+                  && birth_day_input.touched">
+                     numbers only
+                  </small>
+
+                  <small *ngIf="
+                  (last_name_input.errors?last_name_input.errors['required']:false)
+                  && last_name_input.touched">
+                  الاسم مطلوب
+                  </small>
+
+
+              </div>
+
+          </div> -->
+
+
+      </div>
+      <div class="row neue-reg">
+
+      <div class="col-lg-6">
+
+        <div class="form-group ">
+          <label for="percentage">Price Percentage</label>
+          <input #percentage="ngModel"  pattern="^(0|[1-9][0-9]*)$" max="100" min="0"  [ngModel]="0" name="percentage" type="number" class="form-control" >
+          <small *ngIf="
+          (percentage.errors?percentage.errors['pattern']:false)
+          && percentage.touched">
+          النسبة المئوية غير صحيحة
+          </small>
+        </div>
+
+
+      </div>
+      </div>
+      <div class="col-lg-6 p-0">
+
+        <div class="d-flex h-100 align-items-center">
+          <div class="">
+            <div class="custom-control  custom-checkbox ">
+              <input name="urgent_flag" [ngModel]="correspondent.isLTA"  type="checkbox"
+                     class="custom-control-input" id="customCheck1">
+              <label class="custom-control-label" for="customCheck1">Long term agreement</label>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="row neue-reg my-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-end">
+                <button *ngIf="action.type == 'New'" type="submit" class="btn btn-outline-primary tajwal-regium px-5">Create </button>
+                <button *ngIf="action.type == 'Edit'" type="submit" class="btn btn-outline-primary tajwal-regium px-5">Edit </button>
+            </div>
+        </div>
+      </div>
+
+    </form>
+
+  </ng-container>
+
+
+
+</div>
+
